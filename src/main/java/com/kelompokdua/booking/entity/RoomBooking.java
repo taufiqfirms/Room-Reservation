@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Builder
@@ -31,9 +30,9 @@ public class RoomBooking {
     @JoinColumn(name = "room_id")
     private Rooms room;
 
-    @OneToMany
-    @JoinColumn(name = "equipmentId")
-    private List<Equipments> equipmentsId;
+    @ManyToOne
+    @JoinColumn(name = "equipment_id")
+    private Equipments equipment;
 
     @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")

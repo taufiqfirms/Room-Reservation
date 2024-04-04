@@ -30,7 +30,7 @@ public class RoomBookingRequest {
     @NotEmpty
     private String roomId;
 
-    private List<String> equipmentId;
+    private String equipmentId;
 
     @NotNull
     @Future

@@ -25,7 +25,7 @@ public class RoomBookingResponse {
 
     private Rooms room;
 
-    private List<Equipments> equipmentRequests;
+    private Equipments equipmentRequests;
 
     private Date bookingDate;
 

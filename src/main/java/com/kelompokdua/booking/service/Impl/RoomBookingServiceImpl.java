@@ -33,12 +33,16 @@ public class RoomBookingServiceImpl implements RoomBookingService {
     @Transactional
     public RoomBookingResponse bookedRoom(RoomBookingRequest roomBookingRequest) {
 
-//        RoomBooking findRoomBookingByID = roomBookingRepository.getById(roomBookingRequest);
         Rooms findRoomsById = roomsService.getByRoomId(roomBookingRequest.getRoomId());
 
         // Memastikan objek Rooms yang ditemukan tidak null sebelum digunakan
         if (findRoomsById == null) {
             throw new RuntimeException("Room not found with id: " + roomBookingRequest.getRoomId());
+        }
+
+        // Memeriksa apakah status ruangan adalah "BOOKED"
+        if (findRoomsById.getStatus() == ERooms.BOOKED) {
+            throw new RuntimeException("Room is already booked");
         }
 
         // Ubah status ruangan menjadi "booked"
@@ -49,32 +53,22 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
         User findByUserId = userService.getUserById(roomBookingRequest.getUserId());
 
-        List<Equipments> findEquipments = new ArrayList<>();
-        Long totalPriceEquipment = 0L;
+        Equipments findByEquipmentId = equipmentsService.getEquipmentById(roomBookingRequest.getEquipmentId());
 
-        List<String> findEquipmentIds = roomBookingRequest.getEquipmentId();
-        if (findEquipmentIds != null) {
-            for (String equipmentId : findEquipmentIds) {
-                Equipments equipment = equipmentsService.getEquipmentById(equipmentId);
-
-                if (equipment != null) {
-                    Integer newStock = equipment.getQuantity() - 1;
-                    equipment.setQuantity(newStock);
-                    equipmentsService.updateEquipmentById(equipment);
-                    totalPriceEquipment += equipment.getPrice();
-                    findEquipments.add(equipment);
-                }
-            }
-        } else {
-            System.out.println("Daftar id peralatan tidak tersedia.");
+        // Pengecekan ketersediaan fasilitas
+        if (findByEquipmentId.getQuantity() < 1) {
+            throw new RuntimeException("Facility is not available");
         }
 
-        long totalPrice = findRoomsById.getPrice() + totalPriceEquipment;
+        findByEquipmentId.setQuantity(findByEquipmentId.getQuantity() - 1);
+        equipmentsService.updateEquipmentById(findByEquipmentId);
+
+        long totalPrice = findRoomsById.getPrice() + findByEquipmentId.getPrice();
 
         RoomBooking trxRoomBooking = RoomBooking.builder()
                 .room(findRoomsById)
                 .user(findByUserId)
-                .equipmentsId(findEquipments)
+                .equipment(findByEquipmentId)
                 .bookingDate(roomBookingRequest.getBookingDate())
                 .startTime(roomBookingRequest.getStartTime())
                 .endTime(roomBookingRequest.getEndTime())
@@ -98,7 +92,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
                 .id(roomBookingSaved.getId())
                 .user(roomBookingSaved.getUser())
                 .room(roomBookingSaved.getRoom())
-                .equipmentRequests(roomBookingSaved.getEquipmentsId())
+                .equipmentRequests(roomBookingSaved.getEquipment())
                 .bookingDate(roomBookingSaved.getBookingDate())
                 .startTime(roomBookingSaved.getStartTime())
                 .endTime(roomBookingSaved.getEndTime())
@@ -107,6 +101,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
                 .paymentResponse(paymentResponse)
                 .build();
     }
+
 
     @Override
     public List<RoomBookingResponse> getAll() {
