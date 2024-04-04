@@ -11,3 +11,4 @@ public class WebResponse<T> {
     private PagingResponse paging;
     private T data;
 }
+
