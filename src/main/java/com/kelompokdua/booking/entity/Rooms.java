@@ -1,12 +1,15 @@
 package com.kelompokdua.booking.entity;
 
 
+import com.kelompokdua.booking.constant.ERoomType;
 import com.kelompokdua.booking.constant.ERooms;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -21,9 +24,10 @@ public class Rooms {
     private String id;
     @Column(unique = true)
     private String name;
-    private String roomType;
+    @Enumerated(EnumType.STRING)
+    private ERoomType roomType;
     private Integer capacity;
-    private String facilities;
+    private List<String> facilities;
     @Enumerated(EnumType.STRING)
     private ERooms status;
     private Long price;

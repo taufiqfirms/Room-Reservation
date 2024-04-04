@@ -1,6 +1,6 @@
 package com.kelompokdua.booking.model.request;
 
-import com.kelompokdua.booking.constan.ERooms;
+import com.kelompokdua.booking.constant.ERooms;
 import lombok.*;
 
 @Getter

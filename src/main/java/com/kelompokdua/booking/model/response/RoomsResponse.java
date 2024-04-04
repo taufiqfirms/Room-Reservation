@@ -1,6 +1,7 @@
 package com.kelompokdua.booking.model.response;
 
-import com.kelompokdua.booking.constan.ERooms;
+import com.kelompokdua.booking.constant.ERoomType;
+import com.kelompokdua.booking.constant.ERooms;
 import jakarta.persistence.Entity;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.util.List;
 public class RoomsResponse {
     private String id;
     private String name;
-    private String roomType;
+    private ERoomType roomType;
     private Integer capacity;
     private List<String> facilities;
     private ERooms status;

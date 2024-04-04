@@ -1,6 +1,7 @@
 package com.kelompokdua.booking.service.Impl;
 
-import com.kelompokdua.booking.constan.ERooms;
+import com.kelompokdua.booking.constant.ERoomType;
+import com.kelompokdua.booking.constant.ERooms;
 import com.kelompokdua.booking.entity.Rooms;
 
 import com.kelompokdua.booking.model.request.RoomsRequest;
@@ -32,32 +33,36 @@ public class RoomsServiceImpl implements RoomsService {
 
     @Override
     public RoomsResponse createRoom(RoomsRequest roomsRequest) {
-        List<String> facilitySUPERIORS = List.of("Big Tv Screen", "Projector", "Sofa", "Minibar" , "Bathroom", "Mega Desk", "bed", "Land Line Telephone", "Coffee Machine");
-        List<String> facilityVIP = List.of("Big Tv Screen", "Sofa", "Minibar" , "Bathroom", "Big Desk", "Land Line Telephone");
-        List<String> facilitySTANDARD = List.of("Tv Screen", "Sofa", " Desk", "Intercom Telephone");
+
+        List<String> Facilities;
+        if (roomsRequest.getRoomType().equals(ERoomType.STANDARD)) {
+            Facilities = List.of("TV", "Air Conditioner", "Closet", "Bathroom", "WiFi");
+        } else if (roomsRequest.getRoomType().equals(ERoomType.VIP)) {
+            Facilities = List.of("Jacuzzi", "King-sized Bed", "Mini Bar", "Balcony", "Living Room");
+        } else if (roomsRequest.getRoomType().equals(ERoomType.SUPERIORS)) {
+            Facilities = List.of("Spa", "Gym", "Double Bed", "Pool Access", "Dining Area");
+        } else {
+            throw new IllegalStateException("Invalid room type");
+        }
+
         Rooms newRoom = Rooms.builder()
                 .name(roomsRequest.getName())
                 .roomType(roomsRequest.getRoomType())
                 .capacity(roomsRequest.getCapacity())
+                .facilities(Facilities)
                 .status(ERooms.AVAILABLE)
                 .price(roomsRequest.getPrice())
                 .build();
-        if(newRoom.getRoomType().equals("SUPERIORS")){
-            newRoom.setFacilities(facilitySUPERIORS.toString());
-        } else if (newRoom.getRoomType().equals("VIP")) {
-            newRoom.setFacilities(facilityVIP.toString());
-        } else if (newRoom.getRoomType().equals("STANDARD")) {
-            newRoom.setFacilities(facilitySTANDARD.toString());
-        }else{
-            newRoom.setFacilities("Room Is Not On Type Register");
-        }
+
         Rooms saveRoom = roomsRepository.saveAndFlush(newRoom);
         return RoomsResponse.builder()
                 .id(saveRoom.getId())
                 .name(saveRoom.getName())
                 .roomType(saveRoom.getRoomType())
                 .capacity(saveRoom.getCapacity())
-                .facilities(Collections.singletonList(saveRoom.getFacilities()))
+                .facilities(Facilities)
+                .price(saveRoom.getPrice())
+                .status(ERooms.AVAILABLE)
                 .build();
     }
 
@@ -78,6 +83,7 @@ public class RoomsServiceImpl implements RoomsService {
         Pageable pageable = PageRequest.of(roomsSearchRequest.getPage()-1,roomsSearchRequest.getSize());
         return roomsRepository.findAll(roomSpecification, pageable);
     }
+
     public Specification<Rooms> findRoom(String id, String name, String roomType,
                                          Integer capacity, String facilities, ERooms status,
                                          Long minPrice, Long maxPrice) {

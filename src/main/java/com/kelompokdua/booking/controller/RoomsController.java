@@ -1,6 +1,6 @@
 package com.kelompokdua.booking.controller;
 
-import com.kelompokdua.booking.constan.ERooms;
+import com.kelompokdua.booking.constant.ERooms;
 import com.kelompokdua.booking.entity.Rooms;
 import com.kelompokdua.booking.model.request.RoomsRequest;
 import com.kelompokdua.booking.model.request.RoomsSearchRequest;
@@ -38,14 +38,14 @@ public class RoomsController {
 
     @GetMapping
     public ResponseEntity<?> getAllRooms(
-            @RequestParam(defaultValue = "") String Id,
-            @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "") String roomType,
-            @RequestParam(defaultValue = "") Integer capacity,
-            @RequestParam(defaultValue = "") String facilities,
-            @RequestParam(defaultValue = "") ERooms status,
-            @RequestParam(defaultValue = "") Long minPrice,
-            @RequestParam(defaultValue = "") Long maxPrice,
+            @RequestParam(defaultValue = "", required = false) String Id,
+            @RequestParam(defaultValue = "", required = false) String name,
+            @RequestParam(defaultValue = "", required = false) String roomType,
+            @RequestParam(defaultValue = "", required = false) Integer capacity,
+            @RequestParam(defaultValue = "", required = false) String facilities,
+            @RequestParam(defaultValue = "", required = false) ERooms status,
+            @RequestParam(defaultValue = "", required = false) Long minPrice,
+            @RequestParam(defaultValue = "", required = false) Long maxPrice,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size
             ){

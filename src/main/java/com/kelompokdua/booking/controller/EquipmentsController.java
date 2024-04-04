@@ -38,12 +38,12 @@ public class EquipmentsController{
 
     @GetMapping
     public ResponseEntity<WebResponse<List<Equipments>>> getAllEquipment(
-            @RequestParam(defaultValue = "") String id,
-            @RequestParam(defaultValue = "") String equipment,
-            @RequestParam(defaultValue = "") Integer minQuantity,
-            @RequestParam(defaultValue = "") Integer maxQuantity,
-            @RequestParam(defaultValue = "") Long minPrice,
-            @RequestParam(defaultValue = "") Long maxPrice,
+            @RequestParam(defaultValue = "",required = false) String id,
+            @RequestParam(defaultValue = "", required = false) String equipment,
+            @RequestParam(defaultValue = "", required = false) Integer minQuantity,
+            @RequestParam(defaultValue = "", required = false) Integer maxQuantity,
+            @RequestParam(defaultValue = "", required = false) Long minPrice,
+            @RequestParam(defaultValue = "", required = false) Long maxPrice,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size){
         EquipmentsSearchRequest equipmentsSearchRequest = EquipmentsSearchRequest.builder()

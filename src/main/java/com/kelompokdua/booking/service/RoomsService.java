@@ -1,7 +1,7 @@
 package com.kelompokdua.booking.service;
 
 
-import com.kelompokdua.booking.constan.ERooms;
+import com.kelompokdua.booking.constant.ERooms;
 import com.kelompokdua.booking.entity.Rooms;
 import com.kelompokdua.booking.model.request.RoomsRequest;
 import com.kelompokdua.booking.model.request.RoomsSearchRequest;
