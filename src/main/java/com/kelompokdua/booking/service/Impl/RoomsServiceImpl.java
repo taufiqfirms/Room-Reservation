@@ -92,7 +92,7 @@ public class RoomsServiceImpl implements RoomsService {
 
     }
 
-    private List<Rooms> findRoom(String id, String name, String roomType,
+    public List<Rooms> findRoom(String id, String name, String roomType,
                                            Integer capacity, String facilities, ERooms status,
                                            Long minPrice, Long maxPrice) {
 
