@@ -35,10 +35,13 @@ public class RoomBooking {
     @JoinColumn(name = "equipmentRequests")
     private List<Equipments> equipmentRequests;
 
+    @Column(nullable = false)
     private Date bookingDate;
 
+    @Column(nullable = false)
     private Date startTime;
 
+    @Column(nullable = false)
     private Date endTime;
 
     private String description;
@@ -46,5 +49,6 @@ public class RoomBooking {
     @Enumerated(EnumType.STRING)
     private EBookingRoom status;
 
+    @Column(nullable = false)
     private Long totalPrice;
 }
