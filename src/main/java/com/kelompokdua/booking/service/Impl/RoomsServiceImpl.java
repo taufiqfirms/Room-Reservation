@@ -4,6 +4,7 @@ import com.kelompokdua.booking.constan.ERooms;
 import com.kelompokdua.booking.entity.Rooms;
 
 import com.kelompokdua.booking.model.request.RoomsRequest;
+import com.kelompokdua.booking.model.request.RoomsSearchRequest;
 import com.kelompokdua.booking.model.response.RoomsResponse;
 import com.kelompokdua.booking.repository.RoomsRepository;
 import com.kelompokdua.booking.service.RoomsService;
@@ -13,7 +14,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -62,12 +62,21 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public Page<Rooms> getAllRooms(Integer page, Integer size) {
-        if (page <= 0 ) {
-            page = 1;
+    public Page<List<Rooms>> getAllRooms(RoomsSearchRequest roomsSearchRequest) {
+        if (roomsSearchRequest.getPage() <= 0 ) {
+            roomsSearchRequest.setPage(1);
         }
-        Pageable pageable = PageRequest.of(page-1,size);
-        return roomsRepository.findAll(pageable);
+        List<Rooms> roomSpecification = findRoom(
+                roomsSearchRequest.getId(),
+                roomsSearchRequest.getName(),
+                roomsSearchRequest.getRoomType(),
+                roomsSearchRequest.getCapacity(),
+                roomsSearchRequest.getFacilities(),
+                roomsSearchRequest.getStatus(),
+                roomsSearchRequest.getMinPrice(),
+                roomsSearchRequest.getMaxPrice());
+        Pageable pageable = PageRequest.of(roomsSearchRequest.getPage()-1,roomsSearchRequest.getSize());
+        return
     }
 
     @Override
@@ -116,14 +125,13 @@ public class RoomsServiceImpl implements RoomsService {
                 predicates.add(criteriaBuilder.equal(root.get("facilities"), facilities));
             }
             if (status != null) {
-                // Dapatkan Nasabah berdasarkan ID
                 predicates.add(criteriaBuilder.equal(root.get("status"), status));
             }
             if (minPrice != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("minPrice"), minPrice));
             }
             if (maxPrice != null) {
-                
+
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("maxPrice"), maxPrice));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

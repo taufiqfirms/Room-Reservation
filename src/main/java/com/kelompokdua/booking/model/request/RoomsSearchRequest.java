@@ -1,5 +1,6 @@
 package com.kelompokdua.booking.model.request;
 
+import com.kelompokdua.booking.constan.ERooms;
 import lombok.*;
 
 @Getter
@@ -14,7 +15,9 @@ public class RoomsSearchRequest {
     private String roomType;
     private Integer capacity;
     private String facilities;
-    private String status;
+    private ERooms status;
     private Long minPrice;
     private Long maxPrice;
+    private Integer page;
+    private Integer size;
 }

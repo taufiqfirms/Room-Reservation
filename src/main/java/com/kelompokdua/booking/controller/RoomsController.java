@@ -1,5 +1,6 @@
 package com.kelompokdua.booking.controller;
 
+import com.kelompokdua.booking.constan.ERooms;
 import com.kelompokdua.booking.entity.Rooms;
 import com.kelompokdua.booking.model.request.RoomsRequest;
 import com.kelompokdua.booking.model.request.RoomsSearchRequest;
@@ -57,8 +58,10 @@ public class RoomsController {
                 .status(status)
                 .minPrice(minPrice)
                 .maxPrice(maxPrice)
+                .page(page)
+                .size(size)
                 .build();
-        Page<Rooms> roomList = roomsService.getAllRooms(page, size);
+        Page<Rooms> roomList = roomsService.getAllRooms(searchLoanRequest);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
                 .size(size)
