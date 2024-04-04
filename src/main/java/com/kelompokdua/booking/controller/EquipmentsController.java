@@ -3,6 +3,7 @@ package com.kelompokdua.booking.controller;
 
 import com.kelompokdua.booking.entity.Equipments;
 import com.kelompokdua.booking.model.request.EquipmentsRequest;
+import com.kelompokdua.booking.model.request.EquipmentsSearchRequest;
 import com.kelompokdua.booking.model.response.EquipmentsResponse;
 import com.kelompokdua.booking.model.response.PagingResponse;
 import com.kelompokdua.booking.model.response.WebResponse;
@@ -18,7 +19,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/api/v1/equipment-request")
-public class EquipmentController{
+public class EquipmentsController{
 
     private final EquipmentsService equipmentsService;
 
@@ -39,18 +40,23 @@ public class EquipmentController{
     public ResponseEntity<WebResponse<List<Equipments>>> getAllEquipment(
             @RequestParam(defaultValue = "") String id,
             @RequestParam(defaultValue = "") String equipment,
-            @RequestParam(defaultValue = "") Integer quantity,
+            @RequestParam(defaultValue = "") Integer minQuantity,
+            @RequestParam(defaultValue = "") Integer maxQuantity,
             @RequestParam(defaultValue = "") Long minPrice,
             @RequestParam(defaultValue = "") Long maxPrice,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size){
-        SearchLoanRequest searchLoanRequest = SearchLoanRequest.builder()
-                .page((page))
+        EquipmentsSearchRequest equipmentsSearchRequest = EquipmentsSearchRequest.builder()
+                .id(id)
+                .equipment(equipment)
+                .minQuantity(minQuantity)
+                .maxQuantity(maxQuantity)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .page(page)
                 .size(size)
-                .minAmount(minamout)
-                .maxamount(maxamount)
                 .build();
-        Page<Equipments> equipmentsList = equipmentsService.getAllEquipment(page, size);
+        Page<Equipments> equipmentsList = equipmentsService.getAllEquipment(equipmentsSearchRequest);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
                 .size(size)

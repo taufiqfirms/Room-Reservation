@@ -5,7 +5,7 @@ import com.kelompokdua.booking.entity.Equipments;
 import com.kelompokdua.booking.model.request.EquipmentsRequest;
 import com.kelompokdua.booking.model.request.EquipmentsSearchRequest;
 import com.kelompokdua.booking.model.response.EquipmentsResponse;
-import com.kelompokdua.booking.repository.EquipmentRepository;
+import com.kelompokdua.booking.repository.EquipmentsRepository;
 import com.kelompokdua.booking.service.EquipmentsService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
@@ -21,9 +21,9 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class EquipmentServiceImpl implements EquipmentsService {
+public class EquipmentsServiceImpl implements EquipmentsService {
 
-    private final EquipmentRepository equipmentRepository;
+    private final EquipmentsRepository equipmentsRepository;
 
     @Override
     public EquipmentsResponse createEquipment(EquipmentsRequest equipmentsRequest) {
@@ -32,7 +32,7 @@ public class EquipmentServiceImpl implements EquipmentsService {
                 .quantity(equipmentsRequest.getQuantity())
                 .price(equipmentsRequest.getPrice())
                 .build();
-        Equipments saveEquipments = equipmentRepository.saveAndFlush(newEquipments);
+        Equipments saveEquipments = equipmentsRepository.saveAndFlush(newEquipments);
         return EquipmentsResponse.builder()
                 .equipment(saveEquipments.getEquipment())
                 .quantity(saveEquipments.getQuantity())
@@ -48,30 +48,33 @@ public class EquipmentServiceImpl implements EquipmentsService {
         Specification<Equipments> equipmentsSpecification = findEquipments(
                 equipmentsSearchRequest.getId(),
                 equipmentsSearchRequest.getEquipment(),
-                equipmentsSearchRequest.getQuantity(),
+                equipmentsSearchRequest.getMinQuantity(),
+                equipmentsSearchRequest.getMaxQuantity(),
                 equipmentsSearchRequest.getMinPrice(),
                 equipmentsSearchRequest.getMaxPrice());
         Pageable pageable = PageRequest.of(equipmentsSearchRequest.getPage()-1,equipmentsSearchRequest.getSize());
-        return equipmentRepository.findAll(equipmentsSpecification, pageable);
+        return equipmentsRepository.findAll(equipmentsSpecification, pageable);
     }
 
-    public Specification<Equipments> findEquipments(String id, String equipment, Integer quantity,
+    public Specification<Equipments> findEquipments(String id, String equipment,
+                                                    Integer minQuantity, Integer maxQuantity,
                                                     Long minPrice, Long maxPrice) {
 
         return (root, query, criteriaBuilder) -> {
             Predicate idPredicate = criteriaBuilder.equal(root.get("id"), id);
             Predicate equipmentPredicate = criteriaBuilder.equal(root.get("equipment"), equipment);
-            Predicate quantityTypePredicate = criteriaBuilder.equal(root.get("quantity"), quantity);
+            Predicate mixQuantityPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("quantity"), minQuantity);
+            Predicate maxQuantityPredicate = criteriaBuilder.lessThanOrEqualTo(root.get("quantity"), maxQuantity);
             Predicate minPricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
             Predicate maxPricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
-            return criteriaBuilder.or(idPredicate, equipmentPredicate, quantityTypePredicate, 
-                    minPricePredicate, maxPricePredicate);
+            return criteriaBuilder.or(idPredicate, equipmentPredicate, mixQuantityPredicate,
+                    maxQuantityPredicate, minPricePredicate, maxPricePredicate);
         };
     };
 
     @Override
     public Equipments getEquipmentById(String id) {
-        Optional<Equipments> optionalEquipments = equipmentRepository.findById(id);
+        Optional<Equipments> optionalEquipments = equipmentsRepository.findById(id);
         if (optionalEquipments.isPresent()) {
             return optionalEquipments.get();
         }
@@ -81,13 +84,13 @@ public class EquipmentServiceImpl implements EquipmentsService {
     @Override
     public Equipments updateEquipmentById(Equipments equipments) {
         this.getEquipmentById(equipments.getId());
-        return equipmentRepository.save(equipments);
+        return equipmentsRepository.save(equipments);
     }
 
     @Override
     public void deleteEquipmentById(String id) {
         this.getEquipmentById(id);
-        equipmentRepository.deleteById(id);
+        equipmentsRepository.deleteById(id);
 
     }
 }

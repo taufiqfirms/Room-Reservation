@@ -16,7 +16,7 @@ public interface RoomsService {
 
 //    Page<Rooms> getAllRooms(Integer page, Integer size);
 
-    Page<List<Rooms>> getAllRooms(RoomsSearchRequest roomsSearchRequest);
+    Page<Rooms> getAllRooms(RoomsSearchRequest roomsSearchRequest);
 
     Rooms getByRoomId(String id);
 

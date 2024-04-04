@@ -62,11 +62,11 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public Page<List<Rooms>> getAllRooms(RoomsSearchRequest roomsSearchRequest) {
+    public Page<Rooms> getAllRooms(RoomsSearchRequest roomsSearchRequest) {
         if (roomsSearchRequest.getPage() <= 0 ) {
             roomsSearchRequest.setPage(1);
         }
-        List<Rooms> roomSpecification = findRoom(
+         Specification<Rooms> roomSpecification = findRoom(
                 roomsSearchRequest.getId(),
                 roomsSearchRequest.getName(),
                 roomsSearchRequest.getRoomType(),
@@ -76,7 +76,7 @@ public class RoomsServiceImpl implements RoomsService {
                 roomsSearchRequest.getMinPrice(),
                 roomsSearchRequest.getMaxPrice());
         Pageable pageable = PageRequest.of(roomsSearchRequest.getPage()-1,roomsSearchRequest.getSize());
-        return
+        return roomsRepository.findAll(roomSpecification, pageable);
     }
 
     @Override
@@ -101,41 +101,21 @@ public class RoomsServiceImpl implements RoomsService {
 
     }
 
-    public List<Rooms> findRoom(String id, String name, String roomType,
+    public Specification<Rooms> findRoom(String id, String name, String roomType,
                                            Integer capacity, String facilities, ERooms status,
                                            Long minPrice, Long maxPrice) {
 
-        Specification<Rooms> roomsSpecification = (root, query, criteriaBuilder) -> {
-
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (id != null) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), id));
-            }
-            if (name != null) {
-                predicates.add(criteriaBuilder.equal(root.get("name"), name));
-            }
-            if (roomType != null) {
-                predicates.add(criteriaBuilder.equal(root.get("roomType"), roomType));
-            }
-            if (capacity!= null) {
-                predicates.add(criteriaBuilder.equal(root.get("capacity"), capacity));
-            }
-            if (facilities != null) {
-                predicates.add(criteriaBuilder.equal(root.get("facilities"), facilities));
-            }
-            if (status != null) {
-                predicates.add(criteriaBuilder.equal(root.get("status"), status));
-            }
-            if (minPrice != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("minPrice"), minPrice));
-            }
-            if (maxPrice != null) {
-
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("maxPrice"), maxPrice));
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-        return roomsRepository.findAll(roomsSpecification);
+         return (root, query, criteriaBuilder) -> {
+             Predicate idPredicate = criteriaBuilder.equal(root.get("id"), id);
+             Predicate namePredicate = criteriaBuilder.equal(root.get("name"), name);
+             Predicate roomTypePredicate = criteriaBuilder.equal(root.get("roomType"), roomType);
+             Predicate capacityPredicate = criteriaBuilder.equal(root.get("capacity"), capacity);
+             Predicate facilitiesPredicate = criteriaBuilder.equal(root.get("facilities"), facilities);
+             Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), status);
+             Predicate minPricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
+             Predicate maxPricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
+             return criteriaBuilder.or(idPredicate, namePredicate, roomTypePredicate, capacityPredicate,
+                     facilitiesPredicate, statusPredicate, minPricePredicate, maxPricePredicate);
+         };
     };
 }

@@ -43,13 +43,13 @@ public class RoomsController {
             @RequestParam(defaultValue = "") String roomType,
             @RequestParam(defaultValue = "") Integer capacity,
             @RequestParam(defaultValue = "") String facilities,
-            @RequestParam(defaultValue = "") String status,
+            @RequestParam(defaultValue = "") ERooms status,
             @RequestParam(defaultValue = "") Long minPrice,
             @RequestParam(defaultValue = "") Long maxPrice,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size
             ){
-        RoomsSearchRequest searchLoanRequest = RoomsSearchRequest.builder()
+        RoomsSearchRequest searchroomRequest = RoomsSearchRequest.builder()
                 .id(Id)
                 .name(name)
                 .roomType(roomType)
@@ -61,7 +61,7 @@ public class RoomsController {
                 .page(page)
                 .size(size)
                 .build();
-        Page<Rooms> roomList = roomsService.getAllRooms(searchLoanRequest);
+        Page<Rooms> roomList = roomsService.getAllRooms(searchroomRequest);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
                 .size(size)
