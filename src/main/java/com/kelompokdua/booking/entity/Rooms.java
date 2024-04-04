@@ -22,13 +22,20 @@ public class Rooms {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
     @Column(unique = true)
     private String name;
+
     @Enumerated(EnumType.STRING)
     private ERoomType roomType;
+
     private Integer capacity;
+
+    @ElementCollection
     private List<String> facilities;
+
     @Enumerated(EnumType.STRING)
     private ERooms status;
+
     private Long price;
 }

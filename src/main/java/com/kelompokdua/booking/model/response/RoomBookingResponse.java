@@ -23,11 +23,7 @@ public class RoomBookingResponse {
 
     private User user;
 
-    private String NameUser;
-
     private Rooms room;
-
-    private String roomName;
 
     private List<Equipments> equipmentRequests;
 

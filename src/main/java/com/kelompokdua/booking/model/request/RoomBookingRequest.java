@@ -6,6 +6,7 @@ import com.kelompokdua.booking.entity.Payment;
 import com.kelompokdua.booking.entity.Rooms;
 import com.kelompokdua.booking.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Size;
@@ -23,13 +24,13 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomBookingRequest {
 
-    @NotNull
-    private User user;
+    @NotEmpty
+    private String userId;
 
-    @NotNull
-    private Rooms room;
+    @NotEmpty
+    private String roomId;
 
-    private List<Equipments> equipmentRequests;
+    private List<String> equipmentId;
 
     @NotNull
     @Future

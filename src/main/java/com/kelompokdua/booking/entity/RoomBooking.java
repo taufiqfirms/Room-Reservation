@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,9 +31,9 @@ public class RoomBooking {
     @JoinColumn(name = "room_id")
     private Rooms room;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "equipmentRequests")
-    private List<Equipments> equipmentRequests;
+    @OneToMany
+    @JoinColumn(name = "equipmentId")
+    private List<Equipments> equipmentsId;
 
     @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
