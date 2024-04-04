@@ -1,5 +1,6 @@
 package com.kelompokdua.booking.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kelompokdua.booking.constant.EBookingRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,12 +37,15 @@ public class RoomBooking {
     private List<Equipments> equipmentRequests;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
     private Date bookingDate;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
     private Date startTime;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
     private Date endTime;
 
     private String description;
@@ -51,4 +55,9 @@ public class RoomBooking {
 
     @Column(nullable = false)
     private Long totalPrice;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
 }
