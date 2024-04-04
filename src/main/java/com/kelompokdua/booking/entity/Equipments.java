@@ -12,13 +12,12 @@ import lombok.*;
 public class Equipments {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)// tadinya .IDENTITY
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @ManyToOne
-    @JoinColumn(name = "room_booking_id")
-    private RoomBooking roomBooking;
     @Column(unique = true)
     private String equipment;
+
     private Integer quantity;
+
     private Long price;
 }

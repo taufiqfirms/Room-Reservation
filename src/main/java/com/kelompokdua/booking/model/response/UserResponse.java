@@ -1,7 +1,5 @@
-package com.kelompokdua.booking.entity;
+package com.kelompokdua.booking.model.response;
 
-import com.kelompokdua.booking.constant.ERole;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "t_user")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String  id;
-
+public class UserResponse {
     private String name;
 
     private String division;
@@ -26,4 +18,5 @@ public class User {
 
     private String email;
 
+    private String username;
 }

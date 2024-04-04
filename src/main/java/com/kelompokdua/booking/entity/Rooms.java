@@ -1,8 +1,12 @@
 package com.kelompokdua.booking.entity;
 
-import com.kelompokdua.booking.constan.ERooms;
+
+import com.kelompokdua.booking.constant.ERooms;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder

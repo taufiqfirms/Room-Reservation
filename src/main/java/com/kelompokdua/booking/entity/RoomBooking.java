@@ -1,6 +1,6 @@
 package com.kelompokdua.booking.entity;
 
-import com.kelompokdua.booking.constan.ETrxBookingStatus;
+import com.kelompokdua.booking.constant.EBookingRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,19 +31,24 @@ public class RoomBooking {
     @JoinColumn(name = "room_id")
     private Rooms room;
 
-    @OneToMany(mappedBy = "roomBooking", cascade = CascadeType.ALL)
-    private List<Equipments> equipmentRequests = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "equipmentRequests")
+    private List<Equipments> equipmentRequests;
 
+    @Column(nullable = false)
     private Date bookingDate;
 
+    @Column(nullable = false)
     private Date startTime;
 
+    @Column(nullable = false)
     private Date endTime;
 
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private ETrxBookingStatus status;
+    private EBookingRoom status;
 
-    private Date totalPrice;
+    @Column(nullable = false)
+    private Long totalPrice;
 }
