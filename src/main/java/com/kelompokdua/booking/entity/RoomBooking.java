@@ -46,7 +46,7 @@ public class RoomBooking {
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
     private Date endTime;
 
-    private String description;
+    private String notes;
 
     @Enumerated(EnumType.STRING)
     private EBookingRoom status;

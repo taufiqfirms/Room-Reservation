@@ -11,11 +11,14 @@ import com.kelompokdua.booking.model.response.RoomBookingResponse;
 import com.kelompokdua.booking.repository.Equipment;
 import com.kelompokdua.booking.repository.RoomBookingRepository;
 import com.kelompokdua.booking.service.*;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -54,16 +57,21 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         User findByUserId = userService.getUserById(roomBookingRequest.getUserId());
 
         Equipments findByEquipmentId = equipmentsService.getEquipmentById(roomBookingRequest.getEquipmentId());
+        if (!findByEquipmentId.getId().isEmpty()){
+            findByEquipmentId = equipmentsService.getEquipmentById(roomBookingRequest.getEquipmentId());
+            if (findByEquipmentId.getQuantity() < roomBookingRequest.getQtyEquipment()) {
+                throw new RuntimeException("Facility is not available");
+            }
+            findByEquipmentId.setQuantity(findByEquipmentId.getQuantity() - roomBookingRequest.getQtyEquipment());
+            findByEquipmentId = equipmentsService.getEquipmentById(roomBookingRequest.getEquipmentId());
 
-        // Pengecekan ketersediaan fasilitas
-        if (findByEquipmentId.getQuantity() < 1) {
-            throw new RuntimeException("Facility is not available");
         }
+        // Pengecekan ketersediaan fasilitas
 
-        findByEquipmentId.setQuantity(findByEquipmentId.getQuantity() - 1);
+
         equipmentsService.updateEquipmentById(findByEquipmentId);
 
-        long totalPrice = findRoomsById.getPrice() + findByEquipmentId.getPrice();
+        long totalPrice = findRoomsById.getPrice() + (findByEquipmentId.getPrice() * roomBookingRequest.getQtyEquipment());
 
         RoomBooking trxRoomBooking = RoomBooking.builder()
                 .room(findRoomsById)
@@ -104,7 +112,63 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
 
     @Override
-    public List<RoomBookingResponse> getAll() {
-        return null;
+    public List<RoomBooking> getAllBookingRooms(String userId,
+                                                        String roomId,
+                                                        String equipmentId,
+                                                        Integer qtyEquipment,
+                                                        Date bookingDate,
+                                                        Date startTime,
+                                                        Date endTime,
+                                                        String notes,
+                                                        EBookingRoom status,
+                                                        Long totalPrice) {
+
+        Specification<RoomBooking> spec = (root, query, criteriaBuilder) -> {
+            // Inisialisasi list of predicates
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Tambahkan predikat jika nilai parameter tidak null atau kosong
+            if (userId != null) {
+                // Dapatkan Nasabah berdasarkan ID
+                User user = userService.getUserById(userId);
+                predicates.add(criteriaBuilder.equal(root.get("user"), user));
+            }
+            if (roomId != null) {
+                // Dapatkan Nasabah berdasarkan ID
+                Rooms rooms = roomsService.getByRoomId(roomId);
+                predicates.add(criteriaBuilder.equal(root.get("rooms"), rooms));
+            }
+            if (equipmentId != null) {
+                // Dapatkan Nasabah berdasarkan ID
+                Equipments equipments = equipmentsService.getEquipmentById(equipmentId);
+                predicates.add(criteriaBuilder.equal(root.get("equipments"), equipments));
+            }
+            if (qtyEquipment != null) {
+                predicates.add(criteriaBuilder.equal(root.get("qtyEquipment"), qtyEquipment));
+            }
+            if (bookingDate != null) {
+                predicates.add(criteriaBuilder.equal(root.get("bookingDate"), bookingDate));
+            }
+            if (startTime != null) {
+                predicates.add(criteriaBuilder.equal(root.get("startTime"), startTime));
+            }
+            if (endTime != null) {
+                predicates.add(criteriaBuilder.equal(root.get("endTime"), endTime));
+            }
+            if (notes != null) {
+                predicates.add(criteriaBuilder.equal(root.get("notes"), notes));
+            }
+            if (totalPrice != null) {
+                predicates.add(criteriaBuilder.equal(root.get("totalPrice"), totalPrice));
+            }
+
+            // Gabungkan semua predikat dengan operator AND
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        // Dapatkan daftar roomBooking berdasarkan spesifikasi
+        return roomBookingRepository.findAll(spec);
+
     }
+
 }

@@ -33,7 +33,7 @@ public class RoomBookingResponse {
 
     private Date endTime;
 
-    private String description;
+    private String notes;
 
     private EBookingRoom status;
 

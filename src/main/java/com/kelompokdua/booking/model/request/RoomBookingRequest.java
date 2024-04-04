@@ -31,6 +31,7 @@ public class RoomBookingRequest {
     private String roomId;
 
     private String equipmentId;
+    private Integer qtyEquipment;
 
     @NotNull
     @Future
@@ -45,7 +46,7 @@ public class RoomBookingRequest {
     private Date endTime;
 
     @Size(max = 255)
-    private String description;
+    private String notes;
 
     @NotNull
     private EBookingRoom status;
