@@ -14,6 +14,9 @@ import com.kelompokdua.booking.service.*;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -112,16 +115,29 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
 
     @Override
-    public List<RoomBooking> getAllBookingRooms(String userId,
-                                                        String roomId,
-                                                        String equipmentId,
-                                                        Integer qtyEquipment,
-                                                        Date bookingDate,
-                                                        Date startTime,
-                                                        Date endTime,
-                                                        String notes,
-                                                        EBookingRoom status,
-                                                        Long totalPrice) {
+    public Page<RoomBooking> getAllBookingRooms(Integer page,
+                                                Integer size,
+                                                String userId,
+                                                String roomId,
+                                                String equipmentId,
+                                                Integer qtyEquipment,
+                                                Date bookingDate,
+                                                Date startTime,
+                                                Date endTime,
+                                                String notes,
+                                                EBookingRoom status,
+                                                Long totalPrice) {
+
+        if (page == null || page <= 0) {
+            page = 1;
+        }
+
+        if (size == null || size <= 0) {
+            size = 10; // Jumlah default item per halaman
+        }
+
+        // Buat objek Pageable untuk paging
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         Specification<RoomBooking> spec = (root, query, criteriaBuilder) -> {
             // Inisialisasi list of predicates
@@ -129,19 +145,13 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
             // Tambahkan predikat jika nilai parameter tidak null atau kosong
             if (userId != null) {
-                // Dapatkan Nasabah berdasarkan ID
-                User user = userService.getUserById(userId);
-                predicates.add(criteriaBuilder.equal(root.get("user"), user));
+                predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
             }
             if (roomId != null) {
-                // Dapatkan Nasabah berdasarkan ID
-                Rooms rooms = roomsService.getByRoomId(roomId);
-                predicates.add(criteriaBuilder.equal(root.get("rooms"), rooms));
+                predicates.add(criteriaBuilder.equal(root.get("room").get("id"), roomId));
             }
             if (equipmentId != null) {
-                // Dapatkan Nasabah berdasarkan ID
-                Equipments equipments = equipmentsService.getEquipmentById(equipmentId);
-                predicates.add(criteriaBuilder.equal(root.get("equipments"), equipments));
+                predicates.add(criteriaBuilder.equal(root.join("equipment").get("id"), equipmentId));
             }
             if (qtyEquipment != null) {
                 predicates.add(criteriaBuilder.equal(root.get("qtyEquipment"), qtyEquipment));
@@ -156,7 +166,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
                 predicates.add(criteriaBuilder.equal(root.get("endTime"), endTime));
             }
             if (notes != null) {
-                predicates.add(criteriaBuilder.equal(root.get("notes"), notes));
+                predicates.add(criteriaBuilder.equal(root.get("description"), notes));
             }
             if (totalPrice != null) {
                 predicates.add(criteriaBuilder.equal(root.get("totalPrice"), totalPrice));
@@ -166,9 +176,11 @@ public class RoomBookingServiceImpl implements RoomBookingService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        // Dapatkan daftar roomBooking berdasarkan spesifikasi
-        return roomBookingRepository.findAll(spec);
-
+        // Dapatkan daftar roomBooking berdasarkan spesifikasi dan paging
+        return roomBookingRepository.findAll(spec, pageable);
     }
+
+
+
 
 }
