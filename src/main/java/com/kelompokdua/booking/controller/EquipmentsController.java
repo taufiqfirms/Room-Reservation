@@ -37,8 +37,19 @@ public class EquipmentController{
 
     @GetMapping
     public ResponseEntity<WebResponse<List<Equipments>>> getAllEquipment(
+            @RequestParam(defaultValue = "") String id,
+            @RequestParam(defaultValue = "") String equipment,
+            @RequestParam(defaultValue = "") Integer quantity,
+            @RequestParam(defaultValue = "") Long minPrice,
+            @RequestParam(defaultValue = "") Long maxPrice,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size){
+        SearchLoanRequest searchLoanRequest = SearchLoanRequest.builder()
+                .page((page))
+                .size(size)
+                .minAmount(minamout)
+                .maxamount(maxamount)
+                .build();
         Page<Equipments> equipmentsList = equipmentsService.getAllEquipment(page, size);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
