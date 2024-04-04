@@ -91,41 +91,4 @@ public class RoomsServiceImpl implements RoomsService {
         roomsRepository.deleteById(id);
 
     }
-
-    private List<Rooms> findRoom(String id, String name, String roomType,
-                                           Integer capacity, String facilities, ERooms status,
-                                           Long minPrice, Long maxPrice) {
-
-        Specification<Rooms> roomsSpecification = (root, query, criteriaBuilder) -> {
-
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (id != null) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), id));
-            }
-            if (name != null) {
-                predicates.add(criteriaBuilder.equal(root.get("name"), name));
-            }
-            if (roomType != null) {
-                predicates.add(criteriaBuilder.equal(root.get("roomType"), roomType));
-            }
-            if (capacity!= null) {
-                predicates.add(criteriaBuilder.equal(root.get("capacity"), capacity));
-            }
-            if (facilities != null) {
-                predicates.add(criteriaBuilder.equal(root.get("facilities"), facilities));
-            }
-            if (status != null) {
-                predicates.add(criteriaBuilder.equal(root.get("status"), status));
-            }
-            if (minPrice != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("minPrice"), minPrice));
-            }
-            if (maxPrice != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("maxPrice"), maxPrice));
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-        return roomsRepository.findAll(roomsSpecification);
-    };
 }

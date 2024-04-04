@@ -2,7 +2,6 @@ package com.kelompokdua.booking.controller;
 
 import com.kelompokdua.booking.entity.Rooms;
 import com.kelompokdua.booking.model.request.RoomsRequest;
-import com.kelompokdua.booking.model.request.RoomsSearchRequest;
 import com.kelompokdua.booking.model.response.PagingResponse;
 import com.kelompokdua.booking.model.response.RoomsResponse;
 import com.kelompokdua.booking.model.response.WebResponse;
@@ -37,27 +36,9 @@ public class RoomsController {
 
     @GetMapping
     public ResponseEntity<?> getAllRooms(
-            @RequestParam(defaultValue = "") String Id,
-            @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "") String roomType,
-            @RequestParam(defaultValue = "") Integer capacity,
-            @RequestParam(defaultValue = "") String facilities,
-            @RequestParam(defaultValue = "") String status,
-            @RequestParam(defaultValue = "") Long minPrice,
-            @RequestParam(defaultValue = "") Long maxPrice,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size
             ){
-        RoomsSearchRequest searchLoanRequest = RoomsSearchRequest.builder()
-                .id(Id)
-                .name(name)
-                .roomType(roomType)
-                .capacity(capacity)
-                .facilities(facilities)
-                .status(status)
-                .minPrice(minPrice)
-                .maxPrice(maxPrice)
-                .build();
         Page<Rooms> roomList = roomsService.getAllRooms(page, size);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
