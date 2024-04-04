@@ -116,14 +116,12 @@ public class RoomsServiceImpl implements RoomsService {
                 predicates.add(criteriaBuilder.equal(root.get("facilities"), facilities));
             }
             if (status != null) {
-                // Dapatkan Nasabah berdasarkan ID
                 predicates.add(criteriaBuilder.equal(root.get("status"), status));
             }
             if (minPrice != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("minPrice"), minPrice));
             }
             if (maxPrice != null) {
-                
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("maxPrice"), maxPrice));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
