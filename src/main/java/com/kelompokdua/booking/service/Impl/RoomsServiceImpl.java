@@ -78,6 +78,23 @@ public class RoomsServiceImpl implements RoomsService {
         Pageable pageable = PageRequest.of(roomsSearchRequest.getPage()-1,roomsSearchRequest.getSize());
         return roomsRepository.findAll(roomSpecification, pageable);
     }
+    public Specification<Rooms> findRoom(String id, String name, String roomType,
+                                         Integer capacity, String facilities, ERooms status,
+                                         Long minPrice, Long maxPrice) {
+
+        return (root, query, criteriaBuilder) -> {
+            Predicate idPredicate = criteriaBuilder.equal(root.get("id"), id);
+            Predicate namePredicate = criteriaBuilder.equal(root.get("name"), name);
+            Predicate roomTypePredicate = criteriaBuilder.equal(root.get("roomType"), roomType);
+            Predicate capacityPredicate = criteriaBuilder.equal(root.get("capacity"), capacity);
+            Predicate facilitiesPredicate = criteriaBuilder.equal(root.get("facilities"), facilities);
+            Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), status);
+            Predicate minPricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
+            Predicate maxPricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
+            return criteriaBuilder.or(idPredicate, namePredicate, roomTypePredicate, capacityPredicate,
+                    facilitiesPredicate, statusPredicate, minPricePredicate, maxPricePredicate);
+        };
+    };
 
     @Override
     public Rooms getByRoomId(String id) {
@@ -101,21 +118,4 @@ public class RoomsServiceImpl implements RoomsService {
 
     }
 
-    public Specification<Rooms> findRoom(String id, String name, String roomType,
-                                           Integer capacity, String facilities, ERooms status,
-                                           Long minPrice, Long maxPrice) {
-
-         return (root, query, criteriaBuilder) -> {
-             Predicate idPredicate = criteriaBuilder.equal(root.get("id"), id);
-             Predicate namePredicate = criteriaBuilder.equal(root.get("name"), name);
-             Predicate roomTypePredicate = criteriaBuilder.equal(root.get("roomType"), roomType);
-             Predicate capacityPredicate = criteriaBuilder.equal(root.get("capacity"), capacity);
-             Predicate facilitiesPredicate = criteriaBuilder.equal(root.get("facilities"), facilities);
-             Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), status);
-             Predicate minPricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
-             Predicate maxPricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
-             return criteriaBuilder.or(idPredicate, namePredicate, roomTypePredicate, capacityPredicate,
-                     facilitiesPredicate, statusPredicate, minPricePredicate, maxPricePredicate);
-         };
-    };
 }
