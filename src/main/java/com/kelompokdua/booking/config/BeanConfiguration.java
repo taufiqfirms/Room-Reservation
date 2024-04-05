@@ -11,5 +11,7 @@ public class BeanConfiguration {
         return RestClient.create();
     }
 
+
+
 }
 
