@@ -4,5 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.util.Date;
 
 public interface ReportService {
-    ByteArrayInputStream generateDailyReport(Date startDate, Date endDate);
+    ByteArrayInputStream generateBookingReport(Date startDate, Date endDate);
+    ByteArrayInputStream generateRoomReport();
+    ByteArrayInputStream generateEquipmentReport();
+    ByteArrayInputStream generateUserReport();
 }

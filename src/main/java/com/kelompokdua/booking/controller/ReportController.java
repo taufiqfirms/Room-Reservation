@@ -4,6 +4,7 @@ import com.kelompokdua.booking.service.ReportService;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,30 +23,48 @@ public class ReportController {
 
     private final ReportService reportService;
 
+    @GetMapping("/booking")
+    public ResponseEntity<byte[]> generateBookingReport(
+            @RequestParam(value = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam(value = "endDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+        ByteArrayInputStream bis = reportService.generateBookingReport(startDate, endDate);
+        return generateResponseEntity(bis, "booking_report.csv");
+    }
+
+    @GetMapping("/rooms")
+    public ResponseEntity<byte[]> generateRoomReport() {
+        ByteArrayInputStream bis = reportService.generateRoomReport();
+        return generateResponseEntity(bis, "room_report.csv");
+    }
+
+    @GetMapping("/equipments")
+    public ResponseEntity<byte[]> generateEquipmentReport() {
+        ByteArrayInputStream bis = reportService.generateEquipmentReport();
+        return generateResponseEntity(bis, "equipment_report.csv");
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<byte[]> generateUserReport() {
+        ByteArrayInputStream bis = reportService.generateUserReport();
+        return generateResponseEntity(bis, "user_report.csv");
+    }
+
     @GetMapping
-    public ResponseEntity<byte[]> generateDailyReport(
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
-
-        // Generate daily report based on provided date range
-        ByteArrayInputStream bis = reportService.generateDailyReport(startDate, endDate);
-
+    public ResponseEntity<byte[]> generateResponseEntity(ByteArrayInputStream bis, String filename) {
         try {
-            // Convert ByteArrayInputStream to byte array
             byte[] reportBytes = bis.readAllBytes();
 
-            // Set response headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType("application/csv"));
-            headers.setContentDispositionFormData("attachment", "daily_report.csv");
+            headers.setContentDispositionFormData("attachment", filename);
 
-            // Return the response entity with byte array and headers
             return ResponseEntity
                     .ok()
                     .headers(headers)
                     .body(reportBytes);
         } finally {
-            // Close the ByteArrayInputStream
             try {
                 bis.close();
             } catch (IOException e) {
