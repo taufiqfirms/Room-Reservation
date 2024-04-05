@@ -223,6 +223,13 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         // Buat respons untuk memberitahu bahwa operasi telah berhasil
         return RoomBookingResponse.builder()
                 .id(roomBooking.getId())
+                .user(roomBooking.getUser())
+                .room(roomBooking.getRoom())
+                .equipmentRequests(roomBooking.getEquipment())
+                .bookingDate(roomBooking.getBookingDate())
+                .startTime(roomBooking.getStartTime())
+                .endTime(roomBooking.getEndTime())
+                .totalPrice(roomBooking.getTotalPrice())
                 .status(roomBooking.getStatus())
                 .build();
     }
