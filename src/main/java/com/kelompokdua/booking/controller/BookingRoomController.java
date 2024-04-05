@@ -3,6 +3,7 @@ package com.kelompokdua.booking.controller;
 import com.kelompokdua.booking.constant.EBookingRoom;
 import com.kelompokdua.booking.entity.RoomBooking;
 import com.kelompokdua.booking.model.request.RoomBookingRequest;
+import com.kelompokdua.booking.model.request.UpdateBookingStatusRequest;
 import com.kelompokdua.booking.model.response.PagingResponse;
 import com.kelompokdua.booking.model.response.RoomBookingResponse;
 import com.kelompokdua.booking.model.response.WebResponse;
@@ -67,5 +68,14 @@ public class BookingRoomController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/status/{bookingId}")
+    public ResponseEntity<RoomBookingResponse> updateBookingStatus(
+            @PathVariable("bookingId") String bookingId,
+            @RequestBody UpdateBookingStatusRequest updateBookingStatusRequest) {
+
+        RoomBookingResponse response = roomBookingService.updateBookingStatus(bookingId, updateBookingStatusRequest);
+
+        return ResponseEntity.ok(response);
+    }
 
 }

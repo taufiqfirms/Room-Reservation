@@ -34,6 +34,8 @@ public class RoomBooking {
     @JoinColumn(name = "equipment_id")
     private Equipments equipment;
 
+    private Integer qtyEquipment;
+
     @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
     private Date bookingDate;

@@ -6,6 +6,7 @@ import com.kelompokdua.booking.entity.*;
 import com.kelompokdua.booking.model.request.PaymentTransactionRequest;
 import com.kelompokdua.booking.model.request.RoomBookingRequest;
 import com.kelompokdua.booking.model.request.RoomsRequest;
+import com.kelompokdua.booking.model.request.UpdateBookingStatusRequest;
 import com.kelompokdua.booking.model.response.PaymentResponse;
 import com.kelompokdua.booking.model.response.RoomBookingResponse;
 import com.kelompokdua.booking.repository.Equipment;
@@ -69,9 +70,6 @@ public class RoomBookingServiceImpl implements RoomBookingService {
             findByEquipmentId = equipmentsService.getEquipmentById(roomBookingRequest.getEquipmentId());
 
         }
-        // Pengecekan ketersediaan fasilitas
-
-
         equipmentsService.updateEquipmentById(findByEquipmentId);
 
         long totalPrice = findRoomsById.getPrice() + (findByEquipmentId.getPrice() * roomBookingRequest.getQtyEquipment());
@@ -80,6 +78,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
                 .room(findRoomsById)
                 .user(findByUserId)
                 .equipment(findByEquipmentId)
+                .qtyEquipment(roomBookingRequest.getQtyEquipment())
                 .bookingDate(roomBookingRequest.getBookingDate())
                 .startTime(roomBookingRequest.getStartTime())
                 .endTime(roomBookingRequest.getEndTime())
@@ -183,7 +182,50 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         return roomBookingRepository.findAll(spec, pageable);
     }
 
+    @Override
+    @Transactional
+    public RoomBookingResponse updateBookingStatus(String bookingId, UpdateBookingStatusRequest updateBookingStatusRequest) {
+        // Temukan booking berdasarkan ID
+        RoomBooking roomBooking = roomBookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
 
+        // Ubah status booking menjadi ACCEPTED atau REJECTED
+        roomBooking.setStatus(updateBookingStatusRequest.getStatus());
+        if (updateBookingStatusRequest.getNotes() != null) {
+            roomBooking.setNotes(updateBookingStatusRequest.getNotes());
+        }
+        // Jika status booking menjadi ACCEPTED
+        if (updateBookingStatusRequest.getStatus() == EBookingRoom.ACCEPTED) {
+
+            roomBooking.setStatus(EBookingRoom.ACCEPTED);
+
+        } else if (updateBookingStatusRequest.getStatus() == EBookingRoom.REJECTED) {
+
+            roomBooking.setStatus(EBookingRoom.REJECTED);
+
+            Rooms room = roomBooking.getRoom();
+            if (room != null) {
+                room.setStatus(ERooms.AVAILABLE);
+                roomsService.updateRoomById(room);
+            }
+
+            Equipments equipment = roomBooking.getEquipment();
+            if (equipment != null) {
+                int newQuantity = equipment.getQuantity() + roomBooking.getQtyEquipment();
+                equipment.setQuantity(newQuantity);
+                equipmentsService.updateEquipmentById(equipment);
+            }
+        }
+
+        // Simpan perubahan ke database
+        roomBookingRepository.save(roomBooking);
+
+        // Buat respons untuk memberitahu bahwa operasi telah berhasil
+        return RoomBookingResponse.builder()
+                .id(roomBooking.getId())
+                .status(roomBooking.getStatus())
+                .build();
+    }
 
 
 }
