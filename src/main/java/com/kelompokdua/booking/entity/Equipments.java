@@ -1,5 +1,6 @@
 package com.kelompokdua.booking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,4 +21,5 @@ public class Equipments {
     private Integer quantity;
 
     private Long price;
+
 }

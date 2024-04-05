@@ -1,5 +1,6 @@
 package com.kelompokdua.booking.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kelompokdua.booking.constant.EBookingRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,9 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Builder
@@ -31,24 +30,34 @@ public class RoomBooking {
     @JoinColumn(name = "room_id")
     private Rooms room;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "equipmentRequests")
-    private List<Equipments> equipmentRequests;
+    @ManyToOne
+    @JoinColumn(name = "equipment_id")
+    private Equipments equipment;
+
+    private Integer qtyEquipment;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
     private Date bookingDate;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
     private Date startTime;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Jakarta")
     private Date endTime;
 
-    private String description;
+    private String notes;
 
     @Enumerated(EnumType.STRING)
     private EBookingRoom status;
 
     @Column(nullable = false)
     private Long totalPrice;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
 }

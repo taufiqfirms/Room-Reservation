@@ -70,7 +70,7 @@ public class EquipmentsServiceImpl implements EquipmentsService {
             return criteriaBuilder.or(idPredicate, equipmentPredicate, mixQuantityPredicate,
                     maxQuantityPredicate, minPricePredicate, maxPricePredicate);
         };
-    };
+    }
 
     @Override
     public Equipments getEquipmentById(String id) {
@@ -84,7 +84,7 @@ public class EquipmentsServiceImpl implements EquipmentsService {
     @Override
     public Equipments updateEquipmentById(Equipments equipments) {
         this.getEquipmentById(equipments.getId());
-        return equipmentsRepository.save(equipments);
+        return equipmentsRepository.saveAndFlush(equipments);
     }
 
     @Override
