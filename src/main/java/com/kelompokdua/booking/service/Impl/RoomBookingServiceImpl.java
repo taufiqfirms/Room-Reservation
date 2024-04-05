@@ -168,6 +168,9 @@ public class RoomBookingServiceImpl implements RoomBookingService {
             if (notes != null) {
                 predicates.add(criteriaBuilder.equal(root.get("description"), notes));
             }
+            if (status != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+            }
             if (totalPrice != null) {
                 predicates.add(criteriaBuilder.equal(root.get("totalPrice"), totalPrice));
             }
