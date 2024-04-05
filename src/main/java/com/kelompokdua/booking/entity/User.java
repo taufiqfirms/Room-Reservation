@@ -24,6 +24,7 @@ public class User {
 
     private String position;
 
+    @Column(unique = true)
     private String email;
 
 }

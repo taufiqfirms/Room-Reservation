@@ -31,8 +31,7 @@ public class Rooms {
 
     private Integer capacity;
 
-    @ElementCollection
-    private List<String> facilities;
+    private String facilities;
 
     @Enumerated(EnumType.STRING)
     private ERooms status;

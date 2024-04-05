@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 public interface EquipmentsService {
 
     EquipmentsResponse createEquipment(EquipmentsRequest equipmentRequest);
-    Page<Equipments> getAllEquipment(EquipmentsSearchRequest equipmentsSearchRequest);
+    Page<Equipments> findAllEquipment(EquipmentsSearchRequest request);
     Equipments getEquipmentById(String id);
     Equipments updateEquipmentById(Equipments Equipment);
     void deleteEquipmentById(String id);

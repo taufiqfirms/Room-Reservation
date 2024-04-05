@@ -1,6 +1,7 @@
 package com.kelompokdua.booking.service;
 
 
+import com.kelompokdua.booking.constant.ERoomType;
 import com.kelompokdua.booking.constant.ERooms;
 import com.kelompokdua.booking.entity.Rooms;
 import com.kelompokdua.booking.model.request.RoomsRequest;
@@ -16,7 +17,7 @@ public interface RoomsService {
 
 //    Page<Rooms> getAllRooms(Integer page, Integer size);
 
-    Page<Rooms> getAllRooms(RoomsSearchRequest roomsSearchRequest);
+    Page<Rooms> findAllRooms(RoomsSearchRequest request);
 
     Rooms getByRoomId(String id);
 
@@ -25,4 +26,5 @@ public interface RoomsService {
     void deleteRoomById(String id);
 
 
+    Page<Rooms> getAllAvailableRooms(Integer page, Integer size);
 }

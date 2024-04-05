@@ -17,7 +17,7 @@ public class RoomsResponse {
     private String name;
     private ERoomType roomType;
     private Integer capacity;
-    private List<String> facilities;
+    private String facilities;
     private ERooms status;
     private Long price;
 }

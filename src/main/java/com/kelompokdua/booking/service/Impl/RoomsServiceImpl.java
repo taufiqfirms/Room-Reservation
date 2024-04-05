@@ -20,10 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -34,22 +31,20 @@ public class RoomsServiceImpl implements RoomsService {
     @Override
     public RoomsResponse createRoom(RoomsRequest roomsRequest) {
 
-        List<String> Facilities;
-        if (roomsRequest.getRoomType().equals(ERoomType.STANDARD)) {
-            Facilities = List.of("TV", "Air Conditioner", "Closet", "Bathroom", "WiFi");
-        } else if (roomsRequest.getRoomType().equals(ERoomType.VIP)) {
-            Facilities = List.of("Jacuzzi", "King-sized Bed", "Mini Bar", "Balcony", "Living Room");
-        } else if (roomsRequest.getRoomType().equals(ERoomType.SUPERIORS)) {
-            Facilities = List.of("Spa", "Gym", "Double Bed", "Pool Access", "Dining Area");
-        } else {
-            throw new IllegalStateException("Invalid room type");
-        }
+
+        Map<ERoomType, String> facilitiesMap = new HashMap<>();
+        facilitiesMap.put(ERoomType.ECONOMIC, "Air Conditioner, Bathroom, Closet, Wifi");
+        facilitiesMap.put(ERoomType.STANDARD, "TV, Air Conditioner, Closet, Bathroom, WiFi");
+        facilitiesMap.put(ERoomType.BUSINESS, "40 inch TV, Air Conditioner, Closet, Bathroom, Free WiFi, Recliner, Intercom Phone");
+        facilitiesMap.put(ERoomType.VIP, "70 inch Tv, Air Conditioner, Closet, Bathroom, Free WiFi, Recliner, Bed,  Jacuzzi, Mini Bar, Balcony, Living Room, Intercom Phone");
+        facilitiesMap.put(ERoomType.SUPERIORS, "100 inch Tv, Air Conditioner, Closet, Bathroom, Free WiFi,  Living Room, King Size Bed, Spa, Gym, Vending Machine Area, Dining Area, Balcony, Pool Access, Intercom Phone");
+
 
         Rooms newRoom = Rooms.builder()
                 .name(roomsRequest.getName())
                 .roomType(roomsRequest.getRoomType())
                 .capacity(roomsRequest.getCapacity())
-                .facilities(Facilities)
+                .facilities(facilitiesMap.get(roomsRequest.getRoomType()))
                 .status(ERooms.AVAILABLE)
                 .price(roomsRequest.getPrice())
                 .build();
@@ -60,47 +55,71 @@ public class RoomsServiceImpl implements RoomsService {
                 .name(saveRoom.getName())
                 .roomType(saveRoom.getRoomType())
                 .capacity(saveRoom.getCapacity())
-                .facilities(Facilities)
+                .facilities(saveRoom.getFacilities())
                 .price(saveRoom.getPrice())
                 .status(ERooms.AVAILABLE)
                 .build();
     }
 
     @Override
-    public Page<Rooms> getAllRooms(RoomsSearchRequest roomsSearchRequest) {
-        if (roomsSearchRequest.getPage() <= 0 ) {
-            roomsSearchRequest.setPage(1);
+    public Page<Rooms> findAllRooms(RoomsSearchRequest request) {
+        if (request.getPage() == null || request.getPage() <= 0) {
+            request.setPage(1);
         }
-         Specification<Rooms> roomSpecification = findRoom(
-                roomsSearchRequest.getId(),
-                roomsSearchRequest.getName(),
-                roomsSearchRequest.getRoomType(),
-                roomsSearchRequest.getCapacity(),
-                roomsSearchRequest.getFacilities(),
-                roomsSearchRequest.getStatus(),
-                roomsSearchRequest.getMinPrice(),
-                roomsSearchRequest.getMaxPrice());
-        Pageable pageable = PageRequest.of(roomsSearchRequest.getPage()-1,roomsSearchRequest.getSize());
-        return roomsRepository.findAll(roomSpecification, pageable);
+
+        if (request.getSize() == null || request.getSize() <= 0) {
+            request.setSize(10); // Jumlah default item per halaman
+        }
+
+        // Buat objek Pageable untuk paging
+        Pageable pageable = PageRequest.of(
+                request.getPage() - 1, request.getSize());
+
+        Specification<Rooms> spec = (root, query, criteriaBuilder) -> {
+            // Inisialisasi list of predicates
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Tambahkan predikat jika nilai parameter tidak null atau kosong
+            if (request.getId() != null && !request.getId().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("id"), request.getId()));
+            }
+            if (request.getName() != null && !request.getName().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("name"), request.getName()));
+            }
+            if (request.getRoomType() != null && !request.getRoomType().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("roomType"), request.getRoomType()));
+            }
+            if (request.getMinCapacity() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("capacity"), request.getMinCapacity()));
+            }
+            if (request.getCapacity() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("capacity"), request.getCapacity()));
+            }
+            if (request.getMaxCapacity() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("capacity"), request.getMaxCapacity()));
+            }
+            if (request.getFacilities() != null && !request.getFacilities().isEmpty()) {
+                predicates.add(criteriaBuilder.like
+                        (root.<String>get("facilities"), "%"+request.getFacilities()+"%"));
+            }
+            if (request.getStatus() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), request.getStatus()));
+            }
+            if (request.getMinPrice() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(
+                        root.get("price"), request.getMinPrice()));
+            }
+            if (request.getMaxPrice() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(
+                        root.get("price"), request.getMaxPrice()));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        // Dapatkan daftar room berdasarkan spesifikasi dan paging
+        return roomsRepository.findAll(spec, pageable);
     }
 
-    public Specification<Rooms> findRoom(String id, String name, String roomType,
-                                         Integer capacity, String facilities, ERooms status,
-                                         Long minPrice, Long maxPrice) {
-
-        return (root, query, criteriaBuilder) -> {
-            Predicate idPredicate = criteriaBuilder.equal(root.get("id"), id);
-            Predicate namePredicate = criteriaBuilder.equal(root.get("name"), name);
-            Predicate roomTypePredicate = criteriaBuilder.equal(root.get("roomType"), roomType);
-            Predicate capacityPredicate = criteriaBuilder.equal(root.get("capacity"), capacity);
-            Predicate facilitiesPredicate = criteriaBuilder.equal(root.get("facilities"), facilities);
-            Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), status);
-            Predicate minPricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
-            Predicate maxPricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
-            return criteriaBuilder.or(idPredicate, namePredicate, roomTypePredicate, capacityPredicate,
-                    facilitiesPredicate, statusPredicate, minPricePredicate, maxPricePredicate);
-        };
-    };
 
     @Override
     public Rooms getByRoomId(String id) {
@@ -122,6 +141,23 @@ public class RoomsServiceImpl implements RoomsService {
         this.getByRoomId(id);
         roomsRepository.deleteById(id);
 
+    }
+    @Override
+    public Page<Rooms> getAllAvailableRooms(Integer page, Integer size) {
+        if (page == null || page <= 0) {
+            page = 1;
+        }
+
+        if (size == null || size <= 0) {
+            size = 10;
+        }
+        ERooms setStatus = ERooms.AVAILABLE;
+        Specification<Rooms> findRoom = (root, query, criteriaBuilder) -> {
+            Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), setStatus);
+            return criteriaBuilder.or(statusPredicate);
+        };
+        Pageable pageable = PageRequest.of(page-1, size);
+        return roomsRepository.findAll(findRoom, pageable);
     }
 
 }

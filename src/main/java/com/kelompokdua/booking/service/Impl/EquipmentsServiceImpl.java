@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,37 +41,44 @@ public class EquipmentsServiceImpl implements EquipmentsService {
                 .price(saveEquipments.getPrice())
                 .build();
     }
-
     @Override
-    public Page<Equipments> getAllEquipment(EquipmentsSearchRequest equipmentsSearchRequest) {
-        if (equipmentsSearchRequest.getPage() <= 0 ) {
-            equipmentsSearchRequest.setPage(1);
+    public Page<Equipments> findAllEquipment(EquipmentsSearchRequest request) {
+        if (request.getPage() == null || request.getPage() <= 0) {
+            request.setPage(1);
         }
-        Specification<Equipments> equipmentsSpecification = findEquipments(
-                equipmentsSearchRequest.getId(),
-                equipmentsSearchRequest.getEquipment(),
-                equipmentsSearchRequest.getMinQuantity(),
-                equipmentsSearchRequest.getMaxQuantity(),
-                equipmentsSearchRequest.getMinPrice(),
-                equipmentsSearchRequest.getMaxPrice());
-        Pageable pageable = PageRequest.of(equipmentsSearchRequest.getPage()-1,equipmentsSearchRequest.getSize());
-        return equipmentsRepository.findAll(equipmentsSpecification, pageable);
-    }
 
-    public Specification<Equipments> findEquipments(String id, String equipment,
-                                                    Integer minQuantity, Integer maxQuantity,
-                                                    Long minPrice, Long maxPrice) {
+        if (request.getSize() == null || request.getSize() <= 0) {
+            request.setSize(10); // Jumlah default item per halaman
+        }
+        Pageable pageable = PageRequest.of(
+                request.getPage() - 1, request.getSize());
 
-        return (root, query, criteriaBuilder) -> {
-            Predicate idPredicate = criteriaBuilder.equal(root.get("id"), id);
-            Predicate equipmentPredicate = criteriaBuilder.equal(root.get("equipment"), equipment);
-            Predicate mixQuantityPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("quantity"), minQuantity);
-            Predicate maxQuantityPredicate = criteriaBuilder.lessThanOrEqualTo(root.get("quantity"), maxQuantity);
-            Predicate minPricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
-            Predicate maxPricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
-            return criteriaBuilder.or(idPredicate, equipmentPredicate, mixQuantityPredicate,
-                    maxQuantityPredicate, minPricePredicate, maxPricePredicate);
+        Specification<Equipments> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getId() != null && !request.getId().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("id"), request.getId()));
+            }
+            if (request.getEquipment() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("equipment"), request.getEquipment()));
+            }
+            if (request.getMinQuantity() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("quantity"), request.getMinQuantity()));
+            }
+            if (request.getMaxQuantity() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("quantity"), request.getMaxQuantity()));
+            }
+            if (request.getMinPrice() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), request.getMinPrice()));
+            }
+            if (request.getMaxPrice() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), request.getMaxPrice()));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
+
+        return equipmentsRepository.findAll(spec, pageable);
     }
 
     @Override

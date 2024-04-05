@@ -37,15 +37,16 @@ public class EquipmentsController{
     }
 
     @GetMapping
-    public ResponseEntity<WebResponse<List<Equipments>>> getAllEquipment(
-            @RequestParam(defaultValue = "",required = false) String id,
-            @RequestParam(defaultValue = "", required = false) String equipment,
-            @RequestParam(defaultValue = "", required = false) Integer minQuantity,
-            @RequestParam(defaultValue = "", required = false) Integer maxQuantity,
-            @RequestParam(defaultValue = "", required = false) Long minPrice,
-            @RequestParam(defaultValue = "", required = false) Long maxPrice,
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size){
+    public ResponseEntity<?> findEquipment(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String equipment,
+            @RequestParam(required = false) Integer minQuantity,
+            @RequestParam(required = false) Integer maxQuantity,
+            @RequestParam(required = false) Long minPrice,
+            @RequestParam(required = false) Long maxPrice
+    ) {
         EquipmentsSearchRequest equipmentsSearchRequest = EquipmentsSearchRequest.builder()
                 .id(id)
                 .equipment(equipment)
@@ -56,7 +57,7 @@ public class EquipmentsController{
                 .page(page)
                 .size(size)
                 .build();
-        Page<Equipments> equipmentsList = equipmentsService.getAllEquipment(equipmentsSearchRequest);
+        Page<Equipments> equipmentsList = equipmentsService.findAllEquipment(equipmentsSearchRequest);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
                 .size(size)
@@ -70,7 +71,6 @@ public class EquipmentsController{
                 .data(equipmentsList.getContent())
                 .build();
         return ResponseEntity.ok(response);
-
     }
 
     @GetMapping(path = "/{id}")

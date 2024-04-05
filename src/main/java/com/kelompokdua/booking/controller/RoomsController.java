@@ -38,22 +38,25 @@ public class RoomsController {
 
     @GetMapping
     public ResponseEntity<?> getAllRooms(
-            @RequestParam(defaultValue = "", required = false) String Id,
-            @RequestParam(defaultValue = "", required = false) String name,
-            @RequestParam(defaultValue = "", required = false) String roomType,
-            @RequestParam(defaultValue = "", required = false) Integer capacity,
-            @RequestParam(defaultValue = "", required = false) String facilities,
-            @RequestParam(defaultValue = "", required = false) ERooms status,
-            @RequestParam(defaultValue = "", required = false) Long minPrice,
-            @RequestParam(defaultValue = "", required = false) Long maxPrice,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
-            ){
-        RoomsSearchRequest searchroomRequest = RoomsSearchRequest.builder()
-                .id(Id)
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String roomType,
+            @RequestParam(required = false) Integer minCapacity,
+            @RequestParam(required = false) Integer capacity,
+            @RequestParam(required = false) Integer maxCapacity,
+            @RequestParam(required = false) String facilities,
+            @RequestParam(required = false) ERooms status,
+            @RequestParam(required = false) Long minPrice,
+            @RequestParam(required = false) Long maxPrice){
+        RoomsSearchRequest searchRoomRequest = RoomsSearchRequest.builder()
+                .id(id)
                 .name(name)
                 .roomType(roomType)
+                .minCapacity(minCapacity)
                 .capacity(capacity)
+                .maxCapacity(maxCapacity)
                 .facilities(facilities)
                 .status(status)
                 .minPrice(minPrice)
@@ -61,7 +64,7 @@ public class RoomsController {
                 .page(page)
                 .size(size)
                 .build();
-        Page<Rooms> roomList = roomsService.getAllRooms(searchroomRequest);
+        Page<Rooms> roomList = roomsService.findAllRooms(searchRoomRequest);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
                 .size(size)
@@ -75,7 +78,6 @@ public class RoomsController {
                 .data(roomList.getContent())
                 .build();
         return ResponseEntity.ok(response);
-
     }
 
     @GetMapping(path = "/{id}")
@@ -107,6 +109,25 @@ public class RoomsController {
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("Success Delete Room")
                 .data("OK")
+                .build();
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping(path = "/available")
+    public ResponseEntity<?> getAvailableRoom(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        Page<Rooms> roomsList = roomsService.getAllAvailableRooms(page, size);
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(page)
+                .size(size)
+                .totalPages(roomsList.getTotalPages())
+                .totalElement(roomsList.getTotalElements())
+                .build();
+        WebResponse<List<Rooms>> response = WebResponse.<List<Rooms>>builder()
+                .status(HttpStatus.OK.getReasonPhrase())
+                .message("Success Get All Room List")
+                .paging(pagingResponse)
+                .data(roomsList.getContent())
                 .build();
         return ResponseEntity.ok(response);
     }

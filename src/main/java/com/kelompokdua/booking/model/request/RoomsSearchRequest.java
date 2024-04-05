@@ -13,7 +13,9 @@ public class RoomsSearchRequest {
     private String id;
     private String name;
     private String roomType;
+    private Integer minCapacity;
     private Integer capacity;
+    private Integer maxCapacity;
     private String facilities;
     private ERooms status;
     private Long minPrice;
