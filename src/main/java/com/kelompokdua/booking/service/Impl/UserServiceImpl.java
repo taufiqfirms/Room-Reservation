@@ -4,6 +4,7 @@ import com.kelompokdua.booking.constant.ERole;
 import com.kelompokdua.booking.entity.User;
 import com.kelompokdua.booking.model.request.UserRequest;
 
+import com.kelompokdua.booking.model.response.UserResponse;
 import com.kelompokdua.booking.repository.UserRepository;
 import com.kelompokdua.booking.service.UserService;
 import lombok.AllArgsConstructor;

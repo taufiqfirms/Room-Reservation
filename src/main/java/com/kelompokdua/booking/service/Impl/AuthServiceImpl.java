@@ -70,7 +70,7 @@ public class AuthServiceImpl implements AuthService{
         // hash password
         String hassPassword = passwordEncoder.encode(userRequest.getPassword());
         // user baru
-        User user = userService.register(userRequest);
+        UserResponse user = userService.register(userRequest);
         // user credential baru
         UserCredential userCredential = UserCredential.builder()
         .username(userRequest.getUsername())
