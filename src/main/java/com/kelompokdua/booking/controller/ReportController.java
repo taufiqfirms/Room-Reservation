@@ -1,6 +1,7 @@
 package com.kelompokdua.booking.controller;
 
 import com.kelompokdua.booking.service.ReportService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,7 @@ import java.util.Date;
 @RequestMapping("/api/v1/reports")
 @AllArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
+@SecurityRequirement(name = "enigmaAuth")
 public class ReportController {
 
     private final ReportService reportService;

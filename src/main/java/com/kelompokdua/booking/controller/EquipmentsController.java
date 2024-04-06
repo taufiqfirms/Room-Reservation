@@ -8,6 +8,7 @@ import com.kelompokdua.booking.model.response.EquipmentsResponse;
 import com.kelompokdua.booking.model.response.PagingResponse;
 import com.kelompokdua.booking.model.response.WebResponse;
 import com.kelompokdua.booking.service.EquipmentsService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/api/v1/equipment-request")
+@SecurityRequirement(name = "enigmaAuth")
 public class EquipmentsController{
 
     private final EquipmentsService equipmentsService;

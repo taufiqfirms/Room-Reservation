@@ -1,5 +1,6 @@
 package com.kelompokdua.booking.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('EMPLOYEE')")
 @Slf4j
+@SecurityRequirement(name = "enigmaAuth")
 public class UserProfileController {
 
     private final UserService userService;

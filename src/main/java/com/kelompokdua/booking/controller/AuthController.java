@@ -1,5 +1,6 @@
 package com.kelompokdua.booking.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "enigmaAuth")
 public class AuthController {
 
     private final AuthService authService;

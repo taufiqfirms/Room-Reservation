@@ -44,24 +44,24 @@ public class AuthServiceImpl implements AuthService{
     @Value("${app.enigma-coop.password-admin}")
     private String passwordAdmin;
 
-    @PostConstruct
-    public void initSuperAdmin(){
-        Optional<UserCredential> optionalUserCred = userCredentialRepository.findByUsername(usernameAdmin);
-        if(optionalUserCred.isPresent()) return;
-
-        Role superAdminRole = roleService.getOrSave(ERole.ROLE_GA);
-        Role adminRole = roleService.getOrSave(ERole.ROLE_ADMIN);
-        Role employeeRole = roleService.getOrSave(ERole.ROLE_EMPLOYEE);
-
-        String hashPassword = passwordEncoder.encode(passwordAdmin);
-
-        UserCredential userCredential = UserCredential.builder()
-        .username(usernameAdmin)
-        .password(hashPassword)
-        .roles(List.of(superAdminRole, adminRole, employeeRole))
-        .build();
-        userCredentialRepository.saveAndFlush(userCredential);
-    }
+//    @PostConstruct
+//    public void initSuperAdmin(){
+//        Optional<UserCredential> optionalUserCred = userCredentialRepository.findByUsername(usernameAdmin);
+//        if(optionalUserCred.isPresent()) return;
+//
+//        Role superAdminRole = roleService.getOrSave(ERole.ROLE_GA);
+//        Role adminRole = roleService.getOrSave(ERole.ROLE_ADMIN);
+//        Role employeeRole = roleService.getOrSave(ERole.ROLE_EMPLOYEE);
+//
+//        String hashPassword = passwordEncoder.encode(passwordAdmin);
+//
+//        UserCredential userCredential = UserCredential.builder()
+//        .username(usernameAdmin)
+//        .password(hashPassword)
+//        .roles(List.of(superAdminRole, adminRole, employeeRole))
+//        .build();
+//        userCredentialRepository.saveAndFlush(userCredential);
+//    }
 
     @Override
     public UserResponse register(UserRequest userRequest) {
