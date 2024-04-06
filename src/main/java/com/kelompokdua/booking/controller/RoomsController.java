@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
 public class RoomsController {
 
     private final RoomsService roomsService;
-
+    @PreAuthorize("hasAnyRole('ADMIN', GA)")
     @PostMapping
     public ResponseEntity<WebResponse<RoomsResponse>> createdRooms(
             @RequestBody RoomsRequest roomRequest) {
@@ -36,6 +37,7 @@ public class RoomsController {
 
     }
 
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN', 'GA')")
     @GetMapping
     public ResponseEntity<?> getAllRooms(
             @RequestParam(defaultValue = "1") Integer page,
@@ -80,6 +82,7 @@ public class RoomsController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<WebResponse<Rooms>> getRoomById(@PathVariable String id){
         Rooms findRoomsById = roomsService.getByRoomId(id);
@@ -90,7 +93,7 @@ public class RoomsController {
                 .build();
         return ResponseEntity.ok(response);
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @PutMapping
     public ResponseEntity<WebResponse<Rooms>> UpdateRoomById(@RequestBody Rooms rooms) {
         Rooms updateRoomById = roomsService.updateRoomById(rooms);
@@ -102,6 +105,7 @@ public class RoomsController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<WebResponse<String>> deleteRoomById(@PathVariable String id) {
         roomsService.deleteRoomById(id);
@@ -112,6 +116,7 @@ public class RoomsController {
                 .build();
         return ResponseEntity.ok(response);
     }
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN', 'GA')")
     @GetMapping(path = "/available")
     public ResponseEntity<?> getAvailableRoom(
             @RequestParam(defaultValue = "1") Integer page,

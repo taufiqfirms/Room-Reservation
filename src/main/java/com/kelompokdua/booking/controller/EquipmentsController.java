@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
 public class EquipmentsController{
 
     private final EquipmentsService equipmentsService;
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @PostMapping
     public ResponseEntity<WebResponse<EquipmentsResponse>> createdEquipment(
             @RequestBody EquipmentsRequest equipmentRequest) {
@@ -35,7 +36,7 @@ public class EquipmentsController{
         return ResponseEntity.ok(response);
 
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA', 'EMPLOYEE')")
     @GetMapping
     public ResponseEntity<?> findEquipment(
             @RequestParam(required = false) Integer page,
@@ -72,7 +73,7 @@ public class EquipmentsController{
                 .build();
         return ResponseEntity.ok(response);
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<WebResponse<Equipments>> getRoomById(@PathVariable String id){
         Equipments findEquipmentsById = equipmentsService.getEquipmentById(id);
@@ -84,6 +85,7 @@ public class EquipmentsController{
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @PutMapping
     public ResponseEntity<WebResponse<Equipments>> UpdateEquipmentsById(@RequestBody Equipments equipments) {
         Equipments updateEquipmentById = equipmentsService.updateEquipmentById(equipments);
@@ -95,6 +97,7 @@ public class EquipmentsController{
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<WebResponse<String>> deleteEquipmentById(@PathVariable String id) {
         equipmentsService.deleteEquipmentById(id);

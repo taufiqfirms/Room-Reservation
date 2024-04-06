@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -23,7 +24,7 @@ import java.util.List;
 public class BookingRoomController {
     private final RoomBookingService roomBookingService;
 
-
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     @PostMapping("/booked")
     public ResponseEntity<?> bookRoom(@RequestBody RoomBookingRequest roomBookingRequest) {
 
@@ -32,7 +33,7 @@ public class BookingRoomController {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @GetMapping("/all")
     public ResponseEntity<WebResponse<Page<RoomBooking>>> getAllBookingRooms(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
@@ -68,6 +69,7 @@ public class BookingRoomController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA', 'EMPLOYEE')")
     @PutMapping("/status/{bookingId}")
     public ResponseEntity<RoomBookingResponse> updateBookingStatus(
             @PathVariable("bookingId") String bookingId,
