@@ -1,8 +1,8 @@
 package com.kelompokdua.booking.constant;
 
 public enum ERole {
-    ADMIN,
-    EMPLOYEE,
-    GA
+    ROLE_ADMIN,
+    ROLE_EMPLOYEE,
+    ROLE_GA
 
 }

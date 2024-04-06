@@ -49,9 +49,9 @@ public class AuthServiceImpl implements AuthService{
         Optional<UserCredential> optionalUserCred = userCredentialRepository.findByUsername(usernameAdmin);
         if(optionalUserCred.isPresent()) return;
 
-        Role superAdminRole = roleService.getOrSave(ERole.GA);
-        Role adminRole = roleService.getOrSave(ERole.ADMIN);
-        Role employeeRole = roleService.getOrSave(ERole.EMPLOYEE);
+        Role superAdminRole = roleService.getOrSave(ERole.ROLE_GA);
+        Role adminRole = roleService.getOrSave(ERole.ROLE_ADMIN);
+        Role employeeRole = roleService.getOrSave(ERole.ROLE_EMPLOYEE);
 
         String hashPassword = passwordEncoder.encode(passwordAdmin);
 
@@ -66,26 +66,25 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public UserResponse register(UserRequest userRequest) {
         // untuk role
-        Role roleEmployee = roleService.getOrSave(ERole.EMPLOYEE);
+        Role roleEmployee = roleService.getOrSave(ERole.ROLE_EMPLOYEE);
         // hash password
         String hassPassword = passwordEncoder.encode(userRequest.getPassword());
-        // user baru
-        UserResponse user = userService.register(userRequest);
         // user credential baru
-        UserCredential userCredential = UserCredential.builder()
+        UserCredential userCredential = userCredentialRepository.saveAndFlush(UserCredential.builder()
         .username(userRequest.getUsername())
         .password(hassPassword)
         .roles(List.of(roleEmployee))
-        .build();
-        UserCredential savedUserCredential = userCredentialRepository.saveAndFlush(userCredential);
+        .build());
+        User user = userService.createEmployee(userRequest, userCredential);
         //list role
         List<String> roles = userCredential.getRoles().stream().map(role -> role.getRole().name()).toList();
         return UserResponse.builder()
+        .id(user.getId())
         .name(user.getName())
         .division(user.getEmail())
         .position(user.getPosition())
         .email(user.getEmail())
-        .username(savedUserCredential.getUsername())
+        .username(userRequest.getUsername())
         .roles(roles)
         .build();
     }
@@ -96,11 +95,11 @@ public class AuthServiceImpl implements AuthService{
         authRequest.getUsername(),
         authRequest.getPassword());
         // call method untuk kebutuhan validasi credential
-        Authentication authenticate = authenticationManager.authenticate(authentication);
+        Authentication authenticated = authenticationManager.authenticate(authentication);
         // Jika username dan password valid, maka sesinya disimpan untuk akses resource tertentu
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        SecurityContextHolder.getContext().setAuthentication(authenticated);
         // berikan token
-        UserCredential userCredential = (UserCredential)authenticate.getPrincipal();
+        UserCredential userCredential = (UserCredential)authenticated.getPrincipal();
         return jwtUtils.generateToken(userCredential);
     }
 }
