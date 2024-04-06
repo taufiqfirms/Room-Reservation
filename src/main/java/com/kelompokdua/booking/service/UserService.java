@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 
 public interface UserService {
 
-    User register(UserRequest userRequest);
+    UserResponse register(UserRequest userRequest);
 
     Page<User> getAllUser(Integer page, Integer size);
 

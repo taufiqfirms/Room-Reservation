@@ -16,14 +16,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
-@Service
 @AllArgsConstructor
+@Service
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
 
     @Override
-    public User register(UserRequest userRequest) {
+    public UserResponse register(UserRequest userRequest) {
 
         // Buat objek User baru
         User newUser = User.builder()
@@ -39,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
         // Buat objek UserResponse dari User yang disimpan
 
-        return User.builder()
+        return UserResponse.builder()
                 .name(savedUser.getName())
                 .division(savedUser.getDivision())
                 .position(savedUser.getPosition())
@@ -62,6 +61,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) return optionalUser.get();
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id : " + id + " Not Found");
+
 
     }
 

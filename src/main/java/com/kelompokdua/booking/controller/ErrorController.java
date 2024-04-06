@@ -61,4 +61,19 @@ public class ErrorController {
                 .body(response);
     }
 
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+        // Memuat pesan kesalahan yang disesuaikan ke dalam respon
+        WebResponse<String> response = WebResponse.<String>builder()
+                .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(e.getMessage())
+                .build();
+
+        // Mengembalikan respons dengan pesan kesalahan yang disesuaikan
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
 }
+
+

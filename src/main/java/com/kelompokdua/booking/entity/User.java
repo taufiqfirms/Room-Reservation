@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private String  id;
 
     private String name;
 
@@ -24,6 +24,7 @@ public class User {
 
     private String position;
 
+    @Column(unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
