@@ -27,4 +27,10 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    private ERole roles;
+
+    @OneToOne
+    private UserCredential userCredential;
+
 }

@@ -2,7 +2,7 @@ package com.kelompokdua.booking.service;
 
 import com.kelompokdua.booking.entity.User;
 import com.kelompokdua.booking.model.request.UserRequest;
-import com.kelompokdua.booking.model.response.UserResponse;
+
 import org.springframework.data.domain.Page;
 
 public interface UserService {

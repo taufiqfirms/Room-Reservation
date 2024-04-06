@@ -1,8 +1,9 @@
 package com.kelompokdua.booking.service.Impl;
 
+import com.kelompokdua.booking.constant.ERole;
 import com.kelompokdua.booking.entity.User;
 import com.kelompokdua.booking.model.request.UserRequest;
-import com.kelompokdua.booking.model.response.UserResponse;
+
 import com.kelompokdua.booking.repository.UserRepository;
 import com.kelompokdua.booking.service.UserService;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
                 .division(userRequest.getDivision())
                 .position(userRequest.getPosition())
                 .email(userRequest.getEmail())
+                .roles(ERole.EMPLOYEE)
                 .build();
 
         // Simpan objek User baru ke repository

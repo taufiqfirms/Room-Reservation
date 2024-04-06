@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,21 +19,10 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/user")
+@PreAuthorize("hasAnyRole('GA', 'ADMIN')")
 public class UserController {
 
     private final UserService userService;
-
-    @PostMapping("/register")
-    public ResponseEntity<?> createUser(
-            @Valid @RequestBody UserRequest userRequest){
-        UserResponse userResponse = userService.register(userRequest);
-        WebResponse<UserResponse> response = WebResponse.<UserResponse>builder()
-                .status(HttpStatus.CREATED.getReasonPhrase())
-                .message("Succes register new employee")
-                .data(userResponse)
-                .build();
-        return ResponseEntity.ok(response);
-    }
 
     @GetMapping
     public ResponseEntity<?> getAllUser(
