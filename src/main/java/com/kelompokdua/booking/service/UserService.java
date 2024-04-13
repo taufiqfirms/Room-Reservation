@@ -14,6 +14,7 @@ public interface UserService {
     Page<User> getAllUser(Integer page, Integer size);
 
     User getUserById(String id);
+    
     User updateUser(User user);
 
     void  deleteUserById(String id);

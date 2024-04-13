@@ -12,15 +12,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kelompokdua.booking.constant.ERole;
+import com.kelompokdua.booking.entity.Admin;
+import com.kelompokdua.booking.entity.GA;
 import com.kelompokdua.booking.entity.Role;
 import com.kelompokdua.booking.entity.User;
 import com.kelompokdua.booking.entity.UserCredential;
+import com.kelompokdua.booking.model.request.AdminRequest;
 import com.kelompokdua.booking.model.request.AuthRequest;
+import com.kelompokdua.booking.model.request.GARequest;
 import com.kelompokdua.booking.model.request.UserRequest;
+import com.kelompokdua.booking.model.response.AdminResponse;
+import com.kelompokdua.booking.model.response.GAResponse;
 import com.kelompokdua.booking.model.response.UserResponse;
 import com.kelompokdua.booking.repository.UserCredentialRepository;
 import com.kelompokdua.booking.security.JwtUtils;
+import com.kelompokdua.booking.service.AdminService;
 import com.kelompokdua.booking.service.AuthService;
+import com.kelompokdua.booking.service.GAService;
 import com.kelompokdua.booking.service.RoleService;
 import com.kelompokdua.booking.service.UserService;
 
@@ -31,9 +39,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService{
 
-     private final RoleService roleService;
+    private final RoleService roleService;
     private final UserCredentialRepository userCredentialRepository;
     private final UserService userService;
+    private final AdminService adminService;
+    private final GAService gaService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
@@ -101,5 +111,48 @@ public class AuthServiceImpl implements AuthService{
         // berikan token
         UserCredential userCredential = (UserCredential)authenticated.getPrincipal();
         return jwtUtils.generateToken(userCredential);
+    }
+
+    @Override
+    public AdminResponse registerAdmin(AdminRequest adminRequest) {
+        Role roleAdmin = roleService.getOrSave(ERole.ROLE_ADMIN);
+        String hassPassword = passwordEncoder.encode(adminRequest.getPassword());
+        UserCredential userCredential = userCredentialRepository.saveAndFlush(UserCredential.builder()
+        .username(adminRequest.getUsername())
+        .password(hassPassword)
+        .roles(List.of(roleAdmin))
+        .build());
+
+        Admin admin = adminService.createAdmin(adminRequest, userCredential);
+        List<String> roles = userCredential.getRoles().stream().map(role -> role.getRole().name()).toList();
+        return AdminResponse.builder()
+        .id(admin.getId())
+        .name(admin.getName())
+        .email(admin.getEmail())
+        .username(adminRequest.getUsername())
+        .roles(roles)
+        .build();
+
+    }
+
+    @Override
+    public GAResponse registerGA(GARequest gaRequest) {
+        Role roleSuperAdmin = roleService.getOrSave(ERole.ROLE_GA);
+        String hassPassword = passwordEncoder.encode(gaRequest.getPassword());
+        UserCredential userCredential = userCredentialRepository.saveAndFlush(UserCredential.builder()
+        .username(gaRequest.getUsername())
+        .password(hassPassword)
+        .roles(List.of(roleSuperAdmin))
+        .build());
+    
+        GA ga = gaService.createGA(gaRequest, userCredential);
+        List<String> roles = userCredential.getRoles().stream().map(role -> role.getRole().name()).toList();
+        return GAResponse.builder()
+        .id(ga.getId())
+        .name(ga.getName())
+        .email(ga.getEmail())
+        .username(gaRequest.getUsername())
+        .roles(roles)
+        .build();
     }
 }
