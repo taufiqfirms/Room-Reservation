@@ -8,6 +8,7 @@ import com.kelompokdua.booking.model.response.PagingResponse;
 import com.kelompokdua.booking.model.response.RoomBookingResponse;
 import com.kelompokdua.booking.model.response.WebResponse;
 import com.kelompokdua.booking.service.RoomBookingService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/booking")
+@SecurityRequirement(name = "enigmaAuth")
 public class BookingRoomController {
     private final RoomBookingService roomBookingService;
 

@@ -7,6 +7,7 @@ import com.kelompokdua.booking.model.response.PagingResponse;
 import com.kelompokdua.booking.model.response.WebResponse;
 import com.kelompokdua.booking.service.UserService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/user")
 @PreAuthorize("hasAnyRole('GA', 'ADMIN')")
+@SecurityRequirement(name = "enigmaAuth")
 public class UserController {
 
     private final UserService userService;
