@@ -34,6 +34,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
     private final RoomsService roomsService;
     private final UserService userService;
     private final EquipmentsService equipmentsService;
+    private final EmailSenderService emailSenderService;
 
 
     @Override
@@ -219,7 +220,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
         // Simpan perubahan ke database
         roomBookingRepository.save(roomBooking);
-
+        emailSenderService.sendEmail(roomBooking);
         // Buat respons untuk memberitahu bahwa operasi telah berhasil
         return RoomBookingResponse.builder()
                 .id(roomBooking.getId())
