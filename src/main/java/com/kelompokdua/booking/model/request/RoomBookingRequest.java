@@ -45,15 +45,5 @@ public class RoomBookingRequest {
     @Future
     private Date endTime;
 
-    @Size(max = 255)
-    private String notes;
-
-    @NotNull
-    private EBookingRoom status;
-
-    @NotNull
-    private Long totalPrice;
-
-    private Payment payment;
 
 }
