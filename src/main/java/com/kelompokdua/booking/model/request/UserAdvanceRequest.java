@@ -1,6 +1,10 @@
 package com.kelompokdua.booking.model.request;
 
-import jakarta.validation.constraints.*;
+import com.kelompokdua.booking.constant.ERole;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequest {
+public class UserAdvanceRequest {
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -33,5 +37,6 @@ public class UserRequest {
     @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
     private String password;
 
-    
+    @NotNull(message = "Role is required")
+    private ERole role;
 }

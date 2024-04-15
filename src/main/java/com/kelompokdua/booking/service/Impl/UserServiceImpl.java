@@ -3,6 +3,7 @@ package com.kelompokdua.booking.service.Impl;
 import com.kelompokdua.booking.constant.ERole;
 import com.kelompokdua.booking.entity.User;
 import com.kelompokdua.booking.entity.UserCredential;
+import com.kelompokdua.booking.model.request.UserAdvanceRequest;
 import com.kelompokdua.booking.model.request.UserRequest;
 
 import com.kelompokdua.booking.model.response.UserResponse;
@@ -33,6 +34,26 @@ public class UserServiceImpl implements UserService {
                 .position(userRequest.getPosition())
                 .email(userRequest.getEmail())
                 .roles(ERole.ROLE_EMPLOYEE)
+                .userCredential(userCredential)
+                .build();
+
+        // Simpan objek User baru ke repository
+        User savedUser = userRepository.saveAndFlush(newUser);
+
+        // Buat objek UserResponse dari User yang disimpan
+
+        return savedUser;
+    }
+    @Override
+    public User createAdminOrGA(UserAdvanceRequest userAdvanceRequest, UserCredential userCredential) {
+
+        // Buat objek User baru
+        User newUser = User.builder()
+                .name(userAdvanceRequest.getName())
+                .division(userAdvanceRequest.getDivision())
+                .position(userAdvanceRequest.getPosition())
+                .email(userAdvanceRequest.getEmail())
+                .roles(userAdvanceRequest.getRole())
                 .userCredential(userCredential)
                 .build();
 

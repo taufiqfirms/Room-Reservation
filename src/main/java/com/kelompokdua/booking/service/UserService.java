@@ -2,6 +2,7 @@ package com.kelompokdua.booking.service;
 
 import com.kelompokdua.booking.entity.User;
 import com.kelompokdua.booking.entity.UserCredential;
+import com.kelompokdua.booking.model.request.UserAdvanceRequest;
 import com.kelompokdua.booking.model.request.UserRequest;
 
 import com.kelompokdua.booking.model.response.UserResponse;
@@ -20,5 +21,5 @@ public interface UserService {
     void  deleteUserById(String id);
 
     User findByUsername(String name);
-
+    User createAdminOrGA(UserAdvanceRequest userAdvanceRequest, UserCredential userCredential);
 }
