@@ -12,22 +12,21 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     @Override
     public void sendEmail(RoomBooking roomBooking) {
-        StringBuilder messageBody = new StringBuilder();
-        messageBody.append("Dear ").append(roomBooking.getUser().getName()).append(",\n\n");
-        messageBody.append("We would like to inform you about the recent update regarding your booking:\n\n");
-        messageBody.append("Booking ID: ").append(roomBooking.getId()).append("\n");
-        messageBody.append("Room: ").append(roomBooking.getRoom().getName()).append("\n");
-        messageBody.append("Check-in Date: ").append(roomBooking.getStartTime()).append("\n");
-        messageBody.append("Check-out Date: ").append(roomBooking.getEndTime()).append("\n");
-        messageBody.append("Status: ").append(roomBooking.getStatus()).append("\n\n");
-        messageBody.append("Thank you for choosing our service. If you have any further questions or concerns, please don't hesitate to contact us.\n\n");
-        messageBody.append("Best regards,\n");
-        messageBody.append("Kelompok 2 Enigma Camp 2024");
+        String messageBody = "Dear " + roomBooking.getUser().getName() + ",\n\n" +
+                "We would like to inform you about the recent update regarding your booking:\n\n" +
+                "Booking ID: " + roomBooking.getId() + "\n" +
+                "Room: " + roomBooking.getRoom().getName() + "\n" +
+                "Check-in Date: " + roomBooking.getStartTime() + "\n" +
+                "Check-out Date: " + roomBooking.getEndTime() + "\n" +
+                "Status: " + roomBooking.getStatus() + "\n\n" +
+                "Thank you for choosing our service. If you have any further questions or concerns, please don't hesitate to contact us.\n\n" +
+                "Best regards,\n" +
+                "Kelompok 2 Enigma Camp 2024";
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("kelompokduaenigma@gmail.com");
         message.setTo(roomBooking.getUser().getEmail());
-        message.setText(messageBody.toString());
+        message.setText(messageBody);
         message.setSubject("Update Information for your booking");
 
         mailSender.send(message);

@@ -25,7 +25,7 @@ import java.util.List;
 public class RoomsController {
 
     private final RoomsService roomsService;
-    @PreAuthorize("hasAnyRole('ADMIN', GA)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
     @PostMapping
     public ResponseEntity<WebResponse<RoomsResponse>> createdRooms(
             @RequestBody RoomsRequest roomRequest) {

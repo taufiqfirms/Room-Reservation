@@ -11,7 +11,7 @@
 	<groupId>com.kelompokdua</groupId>
 	<artifactId>enigma-booking-management</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>nigma booking management</name>
+	<name>Enigma booking management</name>
 	<description>create booking app management</description>
 	<properties>
 		<java.version>17</java.version>
