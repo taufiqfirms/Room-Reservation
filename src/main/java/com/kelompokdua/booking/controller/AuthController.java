@@ -46,6 +46,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/register-advance")
     public ResponseEntity<?> registerAdvance(@Valid @RequestBody UserAdvanceRequest userAdvanceRequest){
         UserResponse userResponse = authService.registerAdvance(userAdvanceRequest);
