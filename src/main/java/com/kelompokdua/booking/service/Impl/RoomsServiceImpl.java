@@ -162,8 +162,8 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public Rooms findUserByRoomName(String name) {
-        Optional<Rooms> roomsOptional = roomsRepository.findByRoomName(name);
+    public Rooms findUserByName(String name) {
+        Optional<Rooms> roomsOptional = roomsRepository.findByName(name);
         return roomsOptional.orElse(null);
     }
 }

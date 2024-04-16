@@ -13,5 +13,5 @@ import java.util.Optional;
 
 @Repository
 public interface RoomsRepository extends JpaRepository<Rooms, String >, JpaSpecificationExecutor<Rooms> {
-    Optional<Rooms> findByRoomName(String name);
+    Optional<Rooms> findByName(String name);
 }
