@@ -22,4 +22,6 @@ public interface UserService {
 
     User findByUsername(String name);
     User createAdminOrGA(UserAdvanceRequest userAdvanceRequest, UserCredential userCredential);
+
+    User findUserByEmail(String email);
 }

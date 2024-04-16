@@ -1,7 +1,6 @@
 package com.kelompokdua.booking.service.Impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.kelompokdua.booking.model.request.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kelompokdua.booking.constant.ERole;
-import com.kelompokdua.booking.entity.Admin;
-import com.kelompokdua.booking.entity.GA;
 import com.kelompokdua.booking.entity.Role;
 import com.kelompokdua.booking.entity.User;
 import com.kelompokdua.booking.entity.UserCredential;
-import com.kelompokdua.booking.model.response.AdminResponse;
-import com.kelompokdua.booking.model.response.GAResponse;
 import com.kelompokdua.booking.model.response.UserResponse;
 import com.kelompokdua.booking.repository.UserCredentialRepository;
 import com.kelompokdua.booking.security.JwtUtils;
@@ -27,7 +22,6 @@ import com.kelompokdua.booking.service.AuthService;
 import com.kelompokdua.booking.service.RoleService;
 import com.kelompokdua.booking.service.UserService;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @Service

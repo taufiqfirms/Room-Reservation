@@ -102,5 +102,10 @@ public class UserServiceImpl implements UserService {
         if(optional.isPresent()) return optional.get();
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found");
     }
+    @Override
+    public User findUserByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        return userOptional.orElse(null);
+    }
 
 }
