@@ -8,6 +8,7 @@ import com.kelompokdua.booking.model.request.UpdateBookingStatusRequest;
 import com.kelompokdua.booking.model.response.PaymentResponse;
 import com.kelompokdua.booking.model.response.RoomBookingResponse;
 import com.kelompokdua.booking.repository.RoomBookingRepository;
+import com.kelompokdua.booking.repository.UserRepository;
 import com.kelompokdua.booking.service.*;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
     private final PaymentService paymentService;
     private final RoomsService roomsService;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final EquipmentsService equipmentsService;
     private final EmailSenderService emailSenderService;
 
@@ -56,7 +60,13 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         // Menyimpan perubahan status ruangan
         roomsService.updateRoomById(findRoomsById);
 
-        User findByUserId = userService.getUserById(roomBookingRequest.getUserId());
+        // User findByUserId = userService.getUserById(roomBookingRequest.getUserId());
+
+        // User findUser = userRepository.getUserByUserCredential_Username(roomBookingRequest.getUserId());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User findUser = userRepository.getUserByUserCredential_Username(username);
 
         Equipments findByEquipmentId = equipmentsService.getEquipmentById(roomBookingRequest.getEquipmentId());
         if (!findByEquipmentId.getId().isEmpty()){
@@ -74,7 +84,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
         RoomBooking trxRoomBooking = RoomBooking.builder()
                 .room(findRoomsById)
-                .user(findByUserId)
+                .user(findUser)
                 .equipment(findByEquipmentId)
                 .qtyEquipment(roomBookingRequest.getQtyEquipment())
                 .bookingDate(roomBookingRequest.getBookingDate())
