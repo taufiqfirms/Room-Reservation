@@ -41,7 +41,7 @@ public class OpenAPIConfig {
                 .title("ENIGMA BOOKING MANAGEMENT")
                 .version("1.0")
                 .contact(contact)
-                .description("This API exposes endpoints to manage ENIGMA booking. \n KELOMPOK 2 \n 1.Kevin Dwi Rizky \n 2.Wahyu Pratama \n 3.M Taufiq Firmansyah \n 4.Alifia Kireina K \n 5.Abdian Ramdhnie \n")
+                .description("This API exposes endpoints to manage ENIGMA booking by \n KELOMPOK 2 \n 1.Kevin Dwi Rizky \n 2.Romano Willy Smith \n 3.M Taufiq Firmansyah \n 4.Alifia Kireina K \n 5.Abdian Ramdhnie \n")
                 .termsOfService("https://www.example.com/terms")
                 .license(exampleLicense)
                 .extensions(extensions);

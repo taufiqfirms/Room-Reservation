@@ -3,14 +3,12 @@ package com.kelompokdua.booking.service.Impl;
 import com.kelompokdua.booking.constant.EBookingRoom;
 import com.kelompokdua.booking.constant.ERooms;
 import com.kelompokdua.booking.entity.*;
-import com.kelompokdua.booking.model.request.PaymentTransactionRequest;
 import com.kelompokdua.booking.model.request.RoomBookingRequest;
-import com.kelompokdua.booking.model.request.RoomsRequest;
 import com.kelompokdua.booking.model.request.UpdateBookingStatusRequest;
 import com.kelompokdua.booking.model.response.PaymentResponse;
 import com.kelompokdua.booking.model.response.RoomBookingResponse;
-import com.kelompokdua.booking.repository.Equipment;
 import com.kelompokdua.booking.repository.RoomBookingRepository;
+import com.kelompokdua.booking.repository.UserRepository;
 import com.kelompokdua.booking.service.*;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -19,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,7 +33,9 @@ public class RoomBookingServiceImpl implements RoomBookingService {
     private final PaymentService paymentService;
     private final RoomsService roomsService;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final EquipmentsService equipmentsService;
+    private final EmailSenderService emailSenderService;
 
 
     @Override
@@ -58,7 +60,13 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         // Menyimpan perubahan status ruangan
         roomsService.updateRoomById(findRoomsById);
 
-        User findByUserId = userService.getUserById(roomBookingRequest.getUserId());
+        // User findByUserId = userService.getUserById(roomBookingRequest.getUserId());
+
+        // User findUser = userRepository.getUserByUserCredential_Username(roomBookingRequest.getUserId());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User findUser = userRepository.getUserByUserCredential_Username(username);
 
         Equipments findByEquipmentId = equipmentsService.getEquipmentById(roomBookingRequest.getEquipmentId());
         if (!findByEquipmentId.getId().isEmpty()){
@@ -76,7 +84,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
         RoomBooking trxRoomBooking = RoomBooking.builder()
                 .room(findRoomsById)
-                .user(findByUserId)
+                .user(findUser)
                 .equipment(findByEquipmentId)
                 .qtyEquipment(roomBookingRequest.getQtyEquipment())
                 .bookingDate(roomBookingRequest.getBookingDate())
@@ -219,7 +227,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
         // Simpan perubahan ke database
         roomBookingRepository.save(roomBooking);
-
+        emailSenderService.sendEmail(roomBooking);
         // Buat respons untuk memberitahu bahwa operasi telah berhasil
         return RoomBookingResponse.builder()
                 .id(roomBooking.getId())
@@ -233,6 +241,41 @@ public class RoomBookingServiceImpl implements RoomBookingService {
                 .status(roomBooking.getStatus())
                 .build();
     }
+
+
+    @Override
+    @Transactional
+    public void checkout(String bookingId) {
+        // Temukan booking berdasarkan ID
+        RoomBooking roomBooking = roomBookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+
+        // Jika status booking bukan ACCEPTED, lempar exception
+        if (roomBooking.getStatus() != EBookingRoom.ACCEPTED) {
+            throw new RuntimeException("Booking with id " + bookingId + " is not in ACCEPTED status, cannot proceed with checkout");
+        }
+
+        // Ubah status ruangan menjadi AVAILABLE
+        Rooms bookedRoom = roomBooking.getRoom();
+        if (bookedRoom != null) {
+            bookedRoom.setStatus(ERooms.AVAILABLE);
+            roomsService.updateRoomById(bookedRoom);
+        }
+
+        // Kembalikan jumlah peralatan yang dipinjam
+        Equipments bookedEquipment = roomBooking.getEquipment();
+        if (bookedEquipment != null) {
+            int newQuantity = bookedEquipment.getQuantity() + roomBooking.getQtyEquipment();
+            bookedEquipment.setQuantity(newQuantity);
+            equipmentsService.updateEquipmentById(bookedEquipment);
+        }
+
+        // Simpan perubahan ke database
+        roomBookingRepository.save(roomBooking);
+        emailSenderService.sendEmailCheckout(roomBooking);
+
+    }
+
 
 
 }

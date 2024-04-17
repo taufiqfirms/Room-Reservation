@@ -25,6 +25,6 @@ public interface RoomsService {
 
     void deleteRoomById(String id);
 
-
+    Rooms findUserByName(String name);
     Page<Rooms> getAllAvailableRooms(Integer page, Integer size);
 }

@@ -4,6 +4,7 @@ import com.kelompokdua.booking.constant.ERoomType;
 import com.kelompokdua.booking.constant.ERooms;
 import com.kelompokdua.booking.entity.Rooms;
 
+import com.kelompokdua.booking.entity.User;
 import com.kelompokdua.booking.model.request.RoomsRequest;
 import com.kelompokdua.booking.model.request.RoomsSearchRequest;
 import com.kelompokdua.booking.model.response.RoomsResponse;
@@ -160,4 +161,9 @@ public class RoomsServiceImpl implements RoomsService {
         return roomsRepository.findAll(findRoom, pageable);
     }
 
+    @Override
+    public Rooms findUserByName(String name) {
+        Optional<Rooms> roomsOptional = roomsRepository.findByName(name);
+        return roomsOptional.orElse(null);
+    }
 }

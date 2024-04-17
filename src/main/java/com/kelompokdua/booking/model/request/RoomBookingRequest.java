@@ -24,8 +24,8 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomBookingRequest {
 
-    @NotEmpty
-    private String userId;
+    // @NotEmpty
+    // private String userId;
 
     @NotEmpty
     private String roomId;
@@ -45,15 +45,5 @@ public class RoomBookingRequest {
     @Future
     private Date endTime;
 
-    @Size(max = 255)
-    private String notes;
-
-    @NotNull
-    private EBookingRoom status;
-
-    @NotNull
-    private Long totalPrice;
-
-    private Payment payment;
 
 }

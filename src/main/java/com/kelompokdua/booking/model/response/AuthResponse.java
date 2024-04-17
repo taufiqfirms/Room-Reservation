@@ -4,26 +4,16 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
-
-    private String id;
-
-    private String name;
-
-    private String division;
-
-    private String position;
-
-    private String email;
-
+@Builder
+public class AuthResponse {
     private String username;
-
     private List<String> roles;
 }
