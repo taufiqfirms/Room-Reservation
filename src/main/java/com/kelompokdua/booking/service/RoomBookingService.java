@@ -18,4 +18,5 @@ public interface RoomBookingService {
 
     RoomBookingResponse updateBookingStatus(String bookingId, UpdateBookingStatusRequest updateBookingStatusRequest);
 
+    void checkout(String bookingId);
 }

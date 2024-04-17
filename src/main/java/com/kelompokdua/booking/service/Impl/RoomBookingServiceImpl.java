@@ -243,4 +243,39 @@ public class RoomBookingServiceImpl implements RoomBookingService {
     }
 
 
+    @Override
+    @Transactional
+    public void checkout(String bookingId) {
+        // Temukan booking berdasarkan ID
+        RoomBooking roomBooking = roomBookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+
+        // Jika status booking bukan ACCEPTED, lempar exception
+        if (roomBooking.getStatus() != EBookingRoom.ACCEPTED) {
+            throw new RuntimeException("Booking with id " + bookingId + " is not in ACCEPTED status, cannot proceed with checkout");
+        }
+
+        // Ubah status ruangan menjadi AVAILABLE
+        Rooms bookedRoom = roomBooking.getRoom();
+        if (bookedRoom != null) {
+            bookedRoom.setStatus(ERooms.AVAILABLE);
+            roomsService.updateRoomById(bookedRoom);
+        }
+
+        // Kembalikan jumlah peralatan yang dipinjam
+        Equipments bookedEquipment = roomBooking.getEquipment();
+        if (bookedEquipment != null) {
+            int newQuantity = bookedEquipment.getQuantity() + roomBooking.getQtyEquipment();
+            bookedEquipment.setQuantity(newQuantity);
+            equipmentsService.updateEquipmentById(bookedEquipment);
+        }
+
+        // Simpan perubahan ke database
+        roomBookingRepository.save(roomBooking);
+        emailSenderService.sendEmailCheckout(roomBooking);
+
+    }
+
+
+
 }

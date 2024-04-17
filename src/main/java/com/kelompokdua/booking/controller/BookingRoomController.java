@@ -35,7 +35,7 @@ public class BookingRoomController {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'GA')")
+    @PreAuthorize("hasAnyRole('GA')")
     @GetMapping("/all")
     public ResponseEntity<WebResponse<Page<RoomBooking>>> getAllBookingRooms(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
@@ -71,7 +71,7 @@ public class BookingRoomController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GA', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('GA')")
     @PutMapping("/status/{bookingId}")
     public ResponseEntity<RoomBookingResponse> updateBookingStatus(
             @PathVariable("bookingId") String bookingId,
@@ -81,5 +81,16 @@ public class BookingRoomController {
 
         return ResponseEntity.ok(response);
     }
+    @PreAuthorize("hasAnyRole('GA')")
+    @PutMapping("/checkout/{bookingId}")
+    public ResponseEntity<String> checkoutBooking(@PathVariable("bookingId") String bookingId) {
+        try {
+            roomBookingService.checkout(bookingId);
+            return ResponseEntity.ok("Checkout successful for booking with id: " + bookingId);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 }
